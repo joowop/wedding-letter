@@ -10,7 +10,6 @@
   // PLACEHOLDERS — 실제 운영 시 아래 값을 채워주세요.
   // ---------------------------------------------------------
   const KAKAO_JS_KEY     = ''; // placeholder: 카카오 JavaScript 키 (https://developers.kakao.com/)
-  const GUESTBOOK_URL    = ''; // placeholder: 외부 방명록 폼 URL
   const SHARE_TITLE      = '서주완 ♡ 최윤경 결혼합니다';
   const SHARE_DESC       = '2027년 4월 17일 토요일 오전 11시\n파티움하우스 수원 2층 그레이스켈리홀';
   const SHARE_IMAGE      = location.origin + location.pathname.replace(/\/[^/]*$/, '/') + 'images/og-thumbnail.png';
@@ -935,21 +934,256 @@
   }
 
   // ---------------------------------------------------------
-  // 11. Guestbook placeholder URL handling
+  // 11. Guestbook — 페이지 내장 방명록 (Firestore REST, SDK 없음)
+  //     보안 규칙: firestore.rules (읽기 누구나·목록 limit ≤ 50, 생성만 허용)
+  //     사용자 입력은 textContent 로만 렌더링 (innerHTML 금지)
   // ---------------------------------------------------------
-  function setupExternalLinks() {
-    const gb = $('#guestbook-link');
-    if (gb) {
-      if (GUESTBOOK_URL) {
-        gb.href = GUESTBOOK_URL;
-        gb.removeAttribute('data-placeholder-url');
-      } else {
-        gb.addEventListener('click', (e) => {
-          e.preventDefault();
-          showToast('방명록은 준비 중입니다');
+  const FS_PROJECT = 'wedding-letter-e18cd';
+  const FS_DOCS    = `projects/${FS_PROJECT}/databases/(default)/documents`;
+  const FS_BASE    = `https://firestore.googleapis.com/v1/${FS_DOCS}`;
+  const GB_PAGE    = 20;
+  const GB_COOLDOWN_MS = 30000;
+  const GB_LAST_KEY = 'gb-last-submit';
+
+  async function fsRequest(path, body) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 10000);
+    try {
+      const res = await fetch(`${FS_BASE}${path}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: ctrl.signal,
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();                       // JSON 파싱 오류도 throw
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  function randomDocId() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const bytes = new Uint8Array(20);
+    crypto.getRandomValues(bytes);
+    let id = '';
+    for (let i = 0; i < bytes.length; i++) id += chars[bytes[i] % chars.length];
+    return id;
+  }
+
+  function formatGbDate(ts) {
+    const d = new Date(ts);
+    if (isNaN(d.getTime())) return '';
+    const p = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}.${p(d.getMonth() + 1)}.${p(d.getDate())}`;
+  }
+
+  function setupGuestbook() {
+    const section  = $('#guestbook');
+    const form     = $('#gb-form');
+    const nameEl   = $('#gb-name');
+    const msgEl    = $('#gb-message');
+    const nameErr  = $('#gb-name-error');
+    const msgErr   = $('#gb-message-error');
+    const countNum = $('#gb-count-num');
+    const submit   = $('#gb-submit');
+    const statusEl = $('#gb-status');
+    const retryBtn = $('#gb-retry');
+    const list     = $('#gb-list');
+    const moreBtn  = $('#gb-more');
+    if (!section || !form || !list) return;
+
+    // ---- 목록 ----
+    let lastTs = null;       // 마지막으로 받은 글의 createdAt (다음 페이지 기준)
+    let loading = false;
+    const shownIds = new Set();  // 작성 직후 추가한 글이 목록 응답과 겹치지 않게
+
+    function renderItem(entry, isNew) {
+      const li = document.createElement('li');
+      li.className = 'gb-item' + (isNew && !isReduced() ? ' is-new' : '');
+      const head = document.createElement('p');
+      head.className = 'gb-item-head';
+      const name = document.createElement('strong');
+      name.className = 'gb-item-name';
+      name.textContent = entry.name;
+      const date = document.createElement('time');
+      date.className = 'gb-item-date';
+      date.dateTime = entry.createdAt || '';
+      date.textContent = formatGbDate(entry.createdAt);
+      head.append(name, date);
+      const msg = document.createElement('p');
+      msg.className = 'gb-item-msg';
+      msg.textContent = entry.message;
+      li.append(head, msg);
+      return li;
+    }
+
+    function parseEntries(rows) {
+      if (!Array.isArray(rows) || rows.some(r => r && r.error)) throw new Error('bad response');
+      return rows
+        .filter(r => r && r.document && r.document.fields)
+        .map(r => {
+          const f = r.document.fields;
+          return {
+            name: (f.name && f.name.stringValue) || '',
+            message: (f.message && f.message.stringValue) || '',
+            createdAt: (f.createdAt && f.createdAt.timestampValue) || '',
+            id: String(r.document.name || '').split('/').pop(),
+          };
         });
+    }
+
+    function setStatus(text) { statusEl.textContent = text; }
+
+    async function loadPage(more) {
+      if (loading) return;
+      loading = true;
+      retryBtn.hidden = true;
+      moreBtn.hidden = true;
+      if (!more) {
+        setStatus('불러오는 중…');
+        list.textContent = '';       // 다시 시도 시 처음부터
+        shownIds.clear();
+        lastTs = null;
+      } else { moreBtn.disabled = true; }
+
+      const query = {
+        from: [{ collectionId: 'guestbook' }],
+        orderBy: [{ field: { fieldPath: 'createdAt' }, direction: 'DESCENDING' }],
+        limit: GB_PAGE,
+      };
+      if (more && lastTs) query.startAt = { values: [{ timestampValue: lastTs }], before: false };
+
+      try {
+        const entries = parseEntries(await fsRequest(':runQuery', { structuredQuery: query }));
+        const frag = document.createDocumentFragment();
+        entries.forEach(e => {
+          if (e.id && shownIds.has(e.id)) return;
+          if (e.id) shownIds.add(e.id);
+          frag.appendChild(renderItem(e, false));
+        });
+        list.appendChild(frag);
+        if (entries.length) lastTs = entries[entries.length - 1].createdAt;
+        setStatus(list.children.length ? '' : '첫 번째 축하 메시지를 남겨 주세요');
+        moreBtn.hidden = entries.length < GB_PAGE;
+      } catch (e) {
+        if (more) {
+          moreBtn.hidden = false;
+          showToast('잠시 후 다시 시도해 주세요');
+        } else {
+          setStatus('방명록을 불러오지 못했습니다');
+          retryBtn.hidden = false;
+        }
+      } finally {
+        moreBtn.disabled = false;
+        loading = false;
       }
     }
+
+    retryBtn.addEventListener('click', () => loadPage(false));
+    moreBtn.addEventListener('click', () => loadPage(true));
+
+    // 섹션이 화면에 가까워질 때 한 번만 불러오기
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries, obs) => {
+        if (entries.some(e => e.isIntersecting)) {
+          obs.disconnect();
+          loadPage(false);
+        }
+      }, { rootMargin: '200px 0px' });
+      io.observe(section);
+    } else {
+      loadPage(false);
+    }
+
+    // ---- 작성 ----
+    const updateCount = () => { countNum.textContent = String(msgEl.value.length); };
+    msgEl.addEventListener('input', () => {
+      updateCount();
+      if (msgEl.value.trim()) { msgErr.textContent = ''; msgEl.removeAttribute('aria-invalid'); }
+    });
+    nameEl.addEventListener('input', () => {
+      if (nameEl.value.trim()) { nameErr.textContent = ''; nameEl.removeAttribute('aria-invalid'); }
+    });
+    updateCount();
+
+    let lastSubmitAt = 0;
+    function readLastSubmit() {
+      let stored = 0;
+      try { stored = Number(localStorage.getItem(GB_LAST_KEY)) || 0; } catch (e) {}
+      return Math.max(lastSubmitAt, stored);
+    }
+    function writeLastSubmit(t) {
+      lastSubmitAt = t;
+      try { localStorage.setItem(GB_LAST_KEY, String(t)); } catch (e) {}
+    }
+
+    let submitting = false;
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      if (submitting) return;
+
+      const name = nameEl.value.trim();
+      const message = msgEl.value.trim();
+      nameErr.textContent = '';
+      msgErr.textContent = '';
+      nameEl.removeAttribute('aria-invalid');
+      msgEl.removeAttribute('aria-invalid');
+      if (!name) {
+        nameErr.textContent = '이름을 입력해 주세요';
+        nameEl.setAttribute('aria-invalid', 'true');
+      }
+      if (!message) {
+        msgErr.textContent = '메시지를 입력해 주세요';
+        msgEl.setAttribute('aria-invalid', 'true');
+      }
+      if (!name) { nameEl.focus(); return; }
+      if (!message) { msgEl.focus(); return; }
+      if (name.length > 20 || message.length > 300) return;   // maxlength 우회 대비
+
+      const now = Date.now();
+      if (now - readLastSubmit() < GB_COOLDOWN_MS) {
+        showToast('잠시 후 다시 남겨 주세요');
+        return;
+      }
+
+      submitting = true;
+      submit.disabled = true;
+      const label = submit.textContent;
+      submit.textContent = '남기는 중…';
+      try {
+        const docId = randomDocId();
+        const res = await fsRequest(':commit', {
+          writes: [{
+            update: {
+              name: `${FS_DOCS}/guestbook/${docId}`,
+              fields: { name: { stringValue: name }, message: { stringValue: message } },
+            },
+            updateTransforms: [{ fieldPath: 'createdAt', setToServerValue: 'REQUEST_TIME' }],
+            currentDocument: { exists: false },
+          }],
+        });
+        const ts = res && res.writeResults && res.writeResults[0] &&
+                   res.writeResults[0].transformResults && res.writeResults[0].transformResults[0] &&
+                   res.writeResults[0].transformResults[0].timestampValue;
+        writeLastSubmit(Date.now());
+        shownIds.add(docId);
+        list.insertBefore(renderItem({ name, message, createdAt: ts || new Date().toISOString() }, true), list.firstChild);
+        if (!lastTs && ts) lastTs = ts;
+        // 목록이 실패/빈 상태였다면 안내 문구 정리 (실패 상태의 '다시 시도'는 유지)
+        if (retryBtn.hidden) setStatus('');
+        msgEl.value = '';
+        updateCount();
+        haptic(15);
+        showToast('소중한 마음이 전해졌습니다');
+      } catch (e) {
+        showToast('잠시 후 다시 시도해 주세요');
+      } finally {
+        submitting = false;
+        submit.disabled = false;
+        submit.textContent = label;
+      }
+    });
   }
 
   // ---------------------------------------------------------
@@ -981,7 +1215,7 @@
     setupCopy();
     setupMusic();
     setupShare();
-    setupExternalLinks();
+    setupGuestbook();
 
     // reduced-motion 변경 시 단순 reload (모션 일관성 보장)
     if (reducedMotion.addEventListener) {

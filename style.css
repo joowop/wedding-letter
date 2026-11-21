@@ -1072,6 +1072,128 @@ body::before { z-index: 0; }
   margin-bottom: 28px;
 }
 
+/* --- 페이지 내장 방명록 (Firestore REST) --- */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.gb-form,
+.gb-board {
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  text-align: left;
+}
+.gb-form {
+  background: var(--color-surface);
+  border-radius: 12px;
+  padding: 18px 16px 16px;
+}
+.gb-field + .gb-field { margin-top: 10px; }
+.gb-input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 11px 14px;
+  border: 1px solid rgba(118, 102, 74, 0.55);   /* muted 계열 — 크림 위 경계 식별 */
+  border-radius: 10px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-ko-sans);
+  font-size: 16px;                              /* iOS 입력 확대 방지 (≥16px) */
+  line-height: 1.6;
+  transition: border-color var(--dur-base) var(--ease-standard), box-shadow var(--dur-base) var(--ease-standard);
+}
+.gb-input::placeholder { color: var(--color-muted); opacity: 1; }
+.gb-input:focus { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 3px rgba(180, 199, 122, 0.55); }
+.gb-input[aria-invalid="true"] { border-color: var(--color-accent); }
+.gb-textarea { resize: vertical; min-height: calc(1.6em * 4 + 22px); }
+.gb-meta {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 4px;
+}
+.gb-error {
+  flex: 1 1 auto;
+  min-height: 0;
+  font-family: var(--font-ko-sans);
+  font-size: 12.5px;
+  color: var(--color-accent);
+  line-height: 1.5;
+}
+.gb-field > .gb-error:not(:empty) { margin-top: 4px; }
+.gb-count {
+  flex: 0 0 auto;
+  margin-left: auto;
+  font-family: var(--font-ko-sans);
+  font-size: 12px;
+  color: var(--color-muted);
+  letter-spacing: 0.02em;
+}
+.gb-submit { display: block; width: 100%; margin: 14px 0 0; }
+.gb-submit:disabled { opacity: 0.6; cursor: default; transform: none; }
+
+.gb-board { margin-top: 28px; text-align: center; }
+.gb-status {
+  font-family: var(--font-ko-sans);
+  font-size: 13.5px;
+  color: var(--color-muted);
+  line-height: 1.8;
+}
+.gb-status:empty { display: none; }
+.gb-retry, .gb-more { margin-top: 12px; background: var(--color-bg); }
+.gb-retry[hidden], .gb-more[hidden] { display: none; }
+.gb-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+}
+.gb-item {
+  background: var(--color-surface);             /* 불투명 — 꽃잎 캔버스 위 가독성 */
+  border-radius: 12px;
+  padding: 14px 18px 16px;
+}
+.gb-item + .gb-item { margin-top: 10px; }
+.gb-item.is-new { animation: gbFadeIn var(--dur-base) var(--ease-decelerate); }
+@keyframes gbFadeIn { from { opacity: 0; } to { opacity: 1; } }
+.gb-item-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.gb-item-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--font-ko-serif);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+.gb-item-date {
+  flex: 0 0 auto;
+  font-family: var(--font-ko-sans);
+  font-size: 12px;
+  color: var(--color-muted);
+  letter-spacing: 0.02em;
+}
+.gb-item-msg {
+  font-family: var(--font-ko-sans);
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--color-text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .share-actions {
   display: flex;
   flex-direction: column;
@@ -1338,4 +1460,5 @@ body::before { z-index: 0; }
   .couple-card, .couple-amp, .couple-card .parents { opacity: 1 !important; transform: none !important; }
   .gallery-slide.first-reveal img { opacity: 1 !important; filter: none !important; transform: none !important; }
   .gallery-meta { opacity: 1 !important; }
+  .gb-item.is-new { animation: none !important; }
 }

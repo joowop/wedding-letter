@@ -62,7 +62,7 @@
 | 3-11 | Hero ken-burns | Nice | ✅ | 16s 토큰 |
 | 3-12 | 코너·디바이더 가지 살랑임 | Nice | ✅ | 코너 ±1.2deg(붙은 모서리 기준), 디바이더 ±0.6deg, 6s, 요소별 음수 delay, viewport 밖 paused, 반전 코너는 `--flip:-1`로 scaleX 유지 |
 | 4 | 마이크로 인터랙션 색 | Must | ✅ | 아코디언 `rgba(242,194,48,.10)`, 칩 테두리 연두 .5, 포커스 링 accent, 카드 그림자 `rgba(59,48,34,.08)` |
-| 4 | 디바이더 라인 scaleX / 입력 필드 focus | — | 해당 없음 | 페이지에 1px 라인 디바이더·입력 필드가 없음(이미지 디바이더, 외부 폼 링크) |
+| 4 | 디바이더 라인 scaleX / 입력 필드 focus | — | 입력 focus만 ✅ | 디바이더는 이미지라 해당 없음. 방명록 입력(2026-11-21)은 focus 시 accent 테두리 + 연두 링 |
 | 5 | CSS 토큰 | Must | ✅ | `--dur-mid .5 / slow .7 / xslow 1.2 / bg-mesh 45s / bg-petal 20s / pulse 1.4s / ken-burns 16s / branch-sway 6s / stagger .08 · .12` |
 | — | reduced-motion 글로벌 | Must | ✅ | 메시·가지 살랑임·펄스(α .45 고정)·이퀄라이저(scaleY .7)·ripple OFF, 모든 reveal 즉시 표시 |
 
@@ -81,8 +81,8 @@
 | 갤러리 사진 — **실제 사진 11장으로 교체(2026-11-21)** `images/gallery-01~11.jpg` | `index.html:167-201` |
 | 계좌번호 6개 — **채움(2026-11-21)** (표시 `.acc-num` + 숫자만 `data-copy`) | `index.html:313-315`, `327-329`, `335-337`, `349-351`, `357-359`, `365-367` |
 | RSVP 폼 링크 — **섹션 제거(2026-11-21)** | — (HTML 섹션·`RSVP_FORM_URL`·링크 처리·CSS 모두 삭제) |
-| 방명록 폼 링크 | `index.html:406-407` / `script.js:13` (`GUESTBOOK_URL`) |
-| 카카오 SDK `<script>` (주석) | `index.html:442-443` |
+| 방명록 — **페이지 내장 방명록(Firestore REST), 2026-11-21** | `index.html:396-429` / `script.js:936-1187` (`setupGuestbook`) / `style.css:1075-1195` · 보안 규칙 `firestore.rules`(콘솔 게시 필요) |
+| 카카오 SDK `<script>` (주석) | `index.html:462-463` |
 | 카카오 JS 키 | `script.js:12` (`KAKAO_JS_KEY`) |
 | 이름·부모 함자 — **채움(2026-11-21)** | — |
 | 예식장·주소·교통편 — **채움(2026-11-21)** | `index.html:197-295` venue 섹션, 9·14·22(meta), 79(히어로), 152(dday-sub) / `script.js:16` SHARE_DESC |
@@ -101,7 +101,7 @@
 
 ## 7. 배포 가이드
 
-1. placeholder(5절)를 실제 값으로 교체: `og:url`, `GUESTBOOK_URL`, 필요 시 `KAKAO_JS_KEY` + SDK `<script>` 주석 해제.
+1. placeholder(5절)를 실제 값으로 교체: 필요 시 `KAKAO_JS_KEY` + SDK `<script>` 주석 해제. 방명록은 Firebase 콘솔에 `firestore.rules`를 게시해야 동작한다.
 2. 카카오 공유 미리보기는 절대 URL이 필요하다. `og:image`를 `https://{도메인}/images/og-thumbnail.png`로 바꾸고, 카카오 디벨로퍼스에 사이트 도메인을 등록한다.
 3. 정적 호스팅(GitHub Pages / Netlify / Vercel)에 프로젝트 루트를 그대로 올린다. `.nojekyll`이 이미 있다.
 4. 이미지(PNG 0.76~1.71MB)는 WebP 변환을 권장한다(파일명을 바꾸면 index.html 경로도 함께 수정).
@@ -152,3 +152,12 @@
 - **꽃잎 FPS 강등 기준 완화**(script.js `measureFps`): 명세의 50/40fps 대신 28/18fps. iOS 저전력 모드처럼 30fps 로 고정되는 정상 기기에서 꽃잎이 꺼지던 문제를 막기 위함(사용자 최우선 요구가 "꽃잎이 날아다니게").
 - README 의 데모 주소를 이 저장소의 배포 주소로 변경.
 
+## 2026-11-21 방명록을 페이지 내장 방식으로 교체 (Firestore REST)
+
+- **구성**: 외부 링크 버튼(`#guestbook-link`)을 지우고 제목·안내문 아래에 작성 폼과 글 목록을 넣었다(`index.html:406-428`). 폼은 surface 카드 안에 이름 input(`maxlength=20`)과 축하 메시지 textarea(`maxlength=300`, 4줄), "0 / 300" 글자 수, `.btn.primary` "마음 남기기"로 이루어진다. label은 `.sr-only`로 숨기고 `for`로 연결했다. 오류 문구("이름을 입력해 주세요" / "메시지를 입력해 주세요")는 `aria-live="polite"` 문단에 넣고 `aria-describedby`·`aria-invalid`로 입력과 연결했다. 입력 글자는 16px(iOS 확대 방지), 테두리는 muted 계열 1px, 포커스 때는 accent 테두리에 연두 링. 목록은 `<ul>`이며 각 글은 불투명한 surface 카드로, 이름(명조 700, text 색) · 날짜(`YYYY.MM.DD`, 로컬 시간, muted) · 내용(`pre-wrap`, `overflow-wrap: anywhere`)을 보여 준다. 상태 문구는 `#gb-status`(aria-live)에만 둔다: "불러오는 중…" / "첫 번째 축하 메시지를 남겨 주세요" / "방명록을 불러오지 못했습니다" + "다시 시도". "더 보기"는 보조 `.btn` 스타일이다.
+- **JS**(`script.js:936-1187`, `setupGuestbook`): SDK와 API 키 없이 fetch만 쓴다. 요청마다 AbortController 10초 타임아웃을 걸고, HTTP 오류·JSON 파싱 오류·응답 안의 `error` 원소를 모두 실패로 처리한다. 섹션이 화면 200px 안으로 들어올 때 IntersectionObserver로 목록을 한 번 불러오므로, 페이지를 연 직후에는 요청이 없다. 이름·내용·날짜는 `textContent`로만 렌더링한다. 제출할 때는 trim한 뒤 빈 값을 막는다. 보내는 동안 버튼을 끄고 "남기는 중…"으로 바꿔 중복 제출을 막는다. 성공하면 새 글을 목록 맨 위에 짧은 fade(`--dur-base`, reduced-motion이면 없음)로 넣고 내용만 비운 뒤(이름은 유지) "소중한 마음이 전해졌습니다" 토스트를 띄운다. 실패하면 입력은 그대로 두고 "잠시 후 다시 시도해 주세요"를 띄운다. 도배 방지로 30초 쿨다운을 둔다(메모리 변수와 localStorage `gb-last-submit`, try/catch). 방금 쓴 글이 목록 응답에 다시 들어와도 문서 ID로 걸러 중복으로 보이지 않는다. 콘솔에는 아무것도 기록하지 않는다.
+- **REST 호출 2종**: 목록은 `POST …/documents:runQuery`로 `createdAt` 내림차순 20개를 가져온다. "더 보기"에서는 `startAt {values:[마지막 createdAt], before:false}`를 쓴다. 작성은 `POST …/documents:commit`이다. `update`(문서 ID는 `crypto.getRandomValues`로 만든 영숫자 20자, name·message) + `updateTransforms` createdAt=`REQUEST_TIME` + `currentDocument.exists=false`로 보낸다. 날짜는 응답의 `transformResults[0].timestampValue`를 쓴다. 프로젝트 `wedding-letter-e18cd`.
+- **정리**: `GUESTBOOK_URL` 상수, `setupExternalLinks()`(방명록 말고는 용도가 없어 함수째), `#guestbook-link`, `data-placeholder-url`을 지웠다. 세 파일에서 검색 결과 0건이다.
+- **보안 규칙**: 루트의 `firestore.rules`(이번에 수정하지 않음). 누구나 읽을 수 있고 목록 limit은 50 이하이며, 생성은 3필드와 길이 검사를 통과해야 하고 `createdAt == request.time`이어야 한다. 수정과 삭제는 막혀 있다.
+- **사용자가 할 일**: (1) Firebase 콘솔 → Firestore → 규칙에 `firestore.rules` 내용을 붙여 넣고 게시한다. 게시 전에는 목록이 "방명록을 불러오지 못했습니다"로 나오고, 글을 쓰면 실패 토스트가 뜬다. (2) 지워야 할 글은 콘솔 → Firestore → `guestbook` 컬렉션에서 해당 문서를 직접 삭제한다(규칙상 페이지에서는 삭제할 수 없다).
+- **검증**: `node --check script.js` 통과. 실제 Firestore 응답은 403 PERMISSION_DENIED였다(규칙 미게시). 실패 상태와 "다시 시도"(불러오는 중… → 다시 실패)를 실제 요청으로 확인했다. 목록 20개 + 더 보기, 빈 목록, 작성 성공, 30초 쿨다운, 작성 실패(403, 잘못된 JSON, 10초 타임아웃), XSS 문자열은 `window.fetch` stub으로 확인했다. 실제 글은 쓰지 않았다. `<img src=x onerror=alert(1)>`와 `<script>`는 글자 그대로 보였고, 목록 안에 img·script 요소는 0개, alert은 0회였다. 375px·320px 모두 `scrollWidth`가 화면 폭과 같았고, 긴 이름과 띄어쓰기 없는 URL도 카드 안에서 줄바꿈되었다.

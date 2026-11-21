@@ -1,0 +1,36 @@
+rules_version = '2';
+
+// 청첩장 방명록용 Firestore 보안 규칙.
+// Firebase 콘솔 > Firestore > 규칙 탭에 이 내용을 그대로 붙여넣고 "게시"를 누르세요.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /guestbook/{entryId} {
+      // 읽기: 누구나. 목록은 한 번에 최대 50개까지만.
+      allow get: if true;
+      allow list: if request.query.limit <= 50;
+
+      // 쓰기: 누구나 새 글 작성 가능. 형식과 길이만 검사한다.
+      //  - 필드는 name, message, createdAt 세 개뿐
+      //  - 이름 1~20자, 내용 1~300자
+      //  - 작성 시각은 서버 시각이어야 함(임의의 날짜로 위조 불가)
+      allow create: if request.resource.data.keys().hasOnly(['name', 'message', 'createdAt'])
+                    && request.resource.data.keys().hasAll(['name', 'message', 'createdAt'])
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() >= 1
+                    && request.resource.data.name.size() <= 20
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() >= 1
+                    && request.resource.data.message.size() <= 300
+                    && request.resource.data.createdAt == request.time;
+
+      // 수정·삭제: 페이지에서는 불가. 지울 글은 Firebase 콘솔에서 직접 삭제한다.
+      allow update, delete: if false;
+    }
+
+    // 그 밖의 모든 경로는 차단
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
