@@ -9,7 +9,8 @@
   // ---------------------------------------------------------
   // PLACEHOLDERS — 실제 운영 시 아래 값을 채워주세요.
   // ---------------------------------------------------------
-  const KAKAO_JS_KEY     = ''; // placeholder: 카카오 JavaScript 키 (https://developers.kakao.com/)
+  const KAKAO_JS_KEY     = 'bdddda1a3673fb88f27bbcb1266f855e'; // 카카오 JavaScript 키 (공개 값, 등록된 도메인에서만 동작)
+  const SHARE_URL        = location.origin + location.pathname;   // 쿼리·해시를 뺀 청첩장 주소
   const SHARE_TITLE      = '서주완 ♡ 최윤경 결혼합니다';
   const SHARE_DESC       = '2027년 4월 17일 토요일 오전 11시\n파티움하우스 수원 2층 그레이스켈리홀';
   const SHARE_IMAGE      = location.origin + location.pathname.replace(/\/[^/]*$/, '/') + 'images/og-thumbnail.png';
@@ -913,10 +914,10 @@
               title: SHARE_TITLE,
               description: SHARE_DESC,
               imageUrl: SHARE_IMAGE,
-              link: { mobileWebUrl: location.href, webUrl: location.href }
+              link: { mobileWebUrl: SHARE_URL, webUrl: SHARE_URL }
             },
             buttons: [
-              { title: '청첩장 보기', link: { mobileWebUrl: location.href, webUrl: location.href } }
+              { title: '청첩장 보기', link: { mobileWebUrl: SHARE_URL, webUrl: SHARE_URL } }
             ]
           });
           return;
