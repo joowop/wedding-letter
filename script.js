@@ -13,7 +13,7 @@
   const SHARE_URL        = location.origin + location.pathname;   // 쿼리·해시를 뺀 청첩장 주소
   const SHARE_TITLE      = '서주완 ♡ 최윤경 결혼합니다';
   const SHARE_DESC       = '2027년 4월 17일 토요일 오전 11시\n파티움하우스 수원 2층 그레이스켈리홀';
-  const SHARE_IMAGE      = location.origin + location.pathname.replace(/\/[^/]*$/, '/') + 'images/og-thumbnail.png';
+  const SHARE_IMAGE      = location.origin + location.pathname.replace(/\/[^/]*$/, '/') + 'images/share-kakao.png';   // 800x800, 이름·날짜가 들어간 카카오 공유 카드 이미지
   const TARGET_DATE_STR  = '2027-04-17';
   const TARGET_HOUR      = 11;
 
@@ -914,6 +914,8 @@
               title: SHARE_TITLE,
               description: SHARE_DESC,
               imageUrl: SHARE_IMAGE,
+              imageWidth: 800,
+              imageHeight: 800,
               link: { mobileWebUrl: SHARE_URL, webUrl: SHARE_URL }
             },
             buttons: [

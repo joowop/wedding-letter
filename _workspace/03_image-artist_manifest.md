@@ -171,3 +171,13 @@
 - alt: "파티움하우스 수원 약도 — 수인분당선 수원시청역 10번 출구 바로 앞, 주차는 농협·경인일보·파비오더씨타·경기아트센터"
 - 글자가 작으므로 탭하면 확대(lightbox, 핀치 줌)되어야 함.
 
+### 공유 카드 이미지 (2026-11-21 추가) — 기존 og-thumbnail.png 가 가운데가 비어 보여 교체
+개나리 일러스트 위에 페이지와 같은 글꼴(Allura, Nanum Myeongjo, Pretendard)로 "We're getting married / 서주완 & 최윤경 / 2027. 04. 17 토요일 오전 11시 / 파티움하우스 수원 2층 그레이스켈리홀"을 올린 합성 이미지(브라우저 canvas 로 렌더링, AI 생성 아님).
+
+| 파일 | 크기 | 용도 |
+|---|---|---|
+| images/share-card.png | 1200x630 | og:image / twitter:image (링크 붙여넣기 미리보기). 배경: og-thumbnail.png |
+| images/share-kakao.png | 800x800 | 카카오톡 공유 버튼(Kakao.Share) 카드 이미지. 배경: hero-illustration.png 상단 |
+
+이름·일시·장소가 바뀌면 두 이미지를 다시 만들어야 한다. og-thumbnail.png 는 배경 원본으로 보관.
+
