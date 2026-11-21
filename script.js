@@ -9,7 +9,7 @@
   // ---------------------------------------------------------
   // PLACEHOLDERS — 실제 운영 시 아래 값을 채워주세요.
   // ---------------------------------------------------------
-  const KAKAO_JS_KEY     = 'bdddda1a3673fb88f27bbcb1266f855e'; // 카카오 JavaScript 키 (공개 값, 등록된 도메인에서만 동작)
+  const KAKAO_JS_KEY     = 'f6a481f82e565ab747bae4713161e8b3'; // 카카오 JavaScript 키 (공개 값, 등록된 도메인에서만 동작)
   const SHARE_URL        = location.origin + location.pathname;   // 쿼리·해시를 뺀 청첩장 주소
   const SHARE_TITLE      = '서주완 ♡ 최윤경 결혼합니다';
   const SHARE_DESC       = '2027년 4월 17일 토요일 오전 11시\n파티움하우스 수원 2층 그레이스켈리홀';
