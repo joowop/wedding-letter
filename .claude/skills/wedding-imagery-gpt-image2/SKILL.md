@@ -5,14 +5,14 @@ description: 한국 모바일 웨딩 청첩장에 필요한 시각 자산(히어
 
 # Wedding Imagery via gpt-image2
 
-청첩장 시각 자산을 gpt-image2(`gpt-image-2`)로 생성하기 위한 인벤토리·프롬프트·실행 가이드.
+청첩장 시각 자산을 gpt-image2 스킬(OpenAI GPT Image, 기본 모델 `gpt-image-2.6-sunburst`)로 생성하기 위한 인벤토리·프롬프트·실행 가이드.
 
 ## 0. 실행 흐름
 
 1. 컨셉 시트의 `imagery_direction`, `palette`, `mood_keywords` 확인
 2. 본 스킬의 "1. 이미지 인벤토리" 표를 기반으로 필요 이미지 종류·개수 확정
 3. 각 이미지마다 본 스킬의 "3. 프롬프트 템플릿"과 컨셉을 결합하여 영문 프롬프트 작성
-4. **글로벌 스킬 `gpt-image2`를 호출**하여 실제 이미지 생성 (모델: `gpt-image-2` 고정)
+4. **프로젝트 스킬 `gpt-image2`를 호출**하여 실제 이미지 생성 (모델: `gpt-image-2.6-sunburst` 기본)
 5. `images/` 폴더에 저장 → 매니페스트 작성
 
 ## 1. 이미지 인벤토리 (표준)
@@ -139,15 +139,16 @@ on a {background HEX} background. Soft watercolor, calm and grounding. No text.
 
 ## 4. gpt-image2 호출 패턴
 
-글로벌 `gpt-image2` 스킬을 활용한다. 핵심 호출 옵션:
+프로젝트 스킬 `gpt-image2`(`.claude/skills/gpt-image2/SKILL.md`)를 활용한다. 실행 명령·크기 매핑·실패 처리는 그 스킬을 따른다. 핵심 호출 옵션:
 
-- 모델: `gpt-image-2` (고정)
-- 출력: PNG (투명 배경 필요 시 `transparent: true`)
+- 모델: `gpt-image-2.6-sunburst` (기본, 최신·최고 화질)
+- 출력: PNG (투명 배경 필요 시 `--background transparent`)
+- 프롬프트는 `_workspace/prompts/{filename}.txt`에 UTF-8로 저장한 뒤 `--prompt-file`로 전달
 - 텍스트 렌더링이 필요한 경우(예: hero 위 캘리그래피)에는 gpt-image2의 강한 텍스트 렌더링 능력을 활용. 단 한국어 텍스트는 GPT Image 2도 가끔 깨질 수 있으므로 영문 위주로.
 
-이미지 생성 후 저장 경로:
+이미지 생성 후 저장 경로 (프로젝트 루트 기준 상대 경로 — 어느 PC에서든 이 저장소의 `images/` 폴더):
 ```
-/Users/robin/Downloads/wedding-invitation-letter/images/{filename}.png
+images/{filename}.png
 ```
 
 ## 5. 매니페스트 작성

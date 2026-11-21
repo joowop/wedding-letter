@@ -3,24 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
-  <meta name="theme-color" content="#FBF7F3">
-  <title>민준 ♡ 서연 — 2026.10.17 결혼합니다</title>
+  <meta name="theme-color" content="#FFFBF1">
+  <title>주완 ♡ 윤경 — 2027.04.17 결혼합니다</title>
 
-  <meta name="description" content="김민준 박서연의 결혼식에 귀한 걸음 부탁드립니다. 2026년 10월 17일 토요일 오후 2시, 그랜드 인터컨티넨탈 서울 파르나스 그랜드볼룸.">
+  <meta name="description" content="서주완 최윤경의 결혼식에 귀한 걸음 부탁드립니다. 2027년 4월 17일 토요일 오전 11시, 파티움하우스 수원 2층 그레이스켈리홀.">
 
   <!-- Open Graph / Kakao share preview -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="김민준 ♡ 박서연 결혼합니다">
-  <meta property="og:description" content="2026년 10월 17일 토요일 오후 2시 · 그랜드 인터컨티넨탈 서울 그랜드볼룸">
-  <meta property="og:image" content="images/og-thumbnail.png">
+  <meta property="og:title" content="서주완 ♡ 최윤경 결혼합니다">
+  <meta property="og:description" content="2027년 4월 17일 토요일 오전 11시 · 파티움하우스 수원 2층 그레이스켈리홀">
+  <meta property="og:image" content="https://joowop.github.io/wedding-letter/images/og-thumbnail.png">
   <meta property="og:image:width" content="1536">
   <meta property="og:image:height" content="800">
-  <meta property="og:url" content="">
+  <meta property="og:url" content="https://joowop.github.io/wedding-letter/">
   <meta property="og:locale" content="ko_KR">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="김민준 ♡ 박서연 결혼합니다">
-  <meta name="twitter:description" content="2026년 10월 17일 토요일 오후 2시 · 그랜드 인터컨티넨탈 서울 그랜드볼룸">
-  <meta name="twitter:image" content="images/og-thumbnail.png">
+  <meta name="twitter:title" content="서주완 ♡ 최윤경 결혼합니다">
+  <meta name="twitter:description" content="2027년 4월 17일 토요일 오전 11시 · 파티움하우스 수원 2층 그레이스켈리홀">
+  <meta name="twitter:image" content="https://joowop.github.io/wedding-letter/images/og-thumbnail.png">
 
   <!-- Fonts (Google Fonts CDN) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,48 +31,52 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- 배경 모션: 꽃잎 파티클 캔버스 (prefers-reduced-motion에서는 숨김) -->
-  <canvas class="bg-petals" aria-hidden="true"></canvas>
-
-  <!-- prefers-reduced-motion 정적 SVG 꽃잎 4개 -->
-  <div class="bg-petals-static" aria-hidden="true">
-    <svg viewBox="0 0 60 60" class="static-petal sp-1"><ellipse cx="30" cy="30" rx="10" ry="22" fill="#C9A2A2" opacity="0.4" transform="rotate(35 30 30)"/></svg>
-    <svg viewBox="0 0 60 60" class="static-petal sp-2"><ellipse cx="30" cy="30" rx="10" ry="22" fill="#A8B59C" opacity="0.4" transform="rotate(-25 30 30)"/></svg>
-    <svg viewBox="0 0 60 60" class="static-petal sp-3"><ellipse cx="30" cy="30" rx="10" ry="22" fill="#A8B59C" opacity="0.4" transform="rotate(60 30 30)"/></svg>
-    <svg viewBox="0 0 60 60" class="static-petal sp-4"><ellipse cx="30" cy="30" rx="10" ry="22" fill="#C9A2A2" opacity="0.4" transform="rotate(-50 30 30)"/></svg>
-  </div>
-
-  <!-- 음악 토글 (BGM placeholder) -->
-  <button class="music-toggle" id="music-toggle" type="button" aria-label="배경 음악 재생/일시정지" aria-pressed="false">
+  <!-- 음악 토글 -->
+  <button class="music-toggle" id="music-toggle" type="button" aria-label="배경음악 재생" aria-pressed="false">
     <span class="ico-note" aria-hidden="true">
       <svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 18V5l12-2v13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="18" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="16" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
     </span>
     <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
   </button>
-  <!-- placeholder: audio/bgm.mp3 — 사용자가 직접 음원 파일을 audio/ 폴더에 추가해야 합니다 -->
-  <audio id="bgm" src="audio/bgm.mp3" loop preload="none"></audio>
+  <!-- 배경음악: 열리면 재생을 시도하고, 브라우저가 막으면 첫 터치에 시작 (script.js setupMusic) -->
+  <audio id="bgm" src="audio/bgm.mp3" loop preload="auto" playsinline></audio>
 
   <main class="card" id="card">
+    <!-- 배경 모션 레이어 (motion §1-0): 카드 크림 배경 위 · 본문 아래. 그라디언트 메시는 .card::before -->
+    <!-- 개나리 꽃잎 파티클 캔버스 (prefers-reduced-motion에서는 숨김) -->
+    <canvas class="bg-petals" aria-hidden="true"></canvas>
+
+    <!-- prefers-reduced-motion / FPS 강등 시 정적 개나리 장식 4개 (motion §1-A-7) -->
+    <div class="bg-petals-static" aria-hidden="true">
+      <!-- sp-1: 꽃잎 낱장 #F2C230 -->
+      <svg viewBox="0 0 60 60" class="static-petal sp-1"><path d="M30 50 C41.44 40 40.56 18 32.2 10.8 Q30 8.4 27.8 10.8 C19.44 18 18.56 40 30 50 Z" fill="#F2C230" opacity="0.55" transform="rotate(35 30 30)"/></svg>
+      <!-- sp-2: 네 갈래 꽃 #F7D561 + 중심 #E8B21E -->
+      <svg viewBox="0 0 60 60" class="static-petal sp-2"><g transform="translate(30 30) rotate(-12)" opacity="0.55"><defs><path id="fp-static" d="M0 0 C6.86 -6 6.34 -19.2 1.32 -23.52 Q0 -24.96 -1.32 -23.52 C-6.34 -19.2 -6.86 -6 0 0 Z"/></defs><use href="#fp-static" fill="#F7D561"/><use href="#fp-static" fill="#F7D561" transform="rotate(92)"/><use href="#fp-static" fill="#F7D561" transform="rotate(178)"/><use href="#fp-static" fill="#F7D561" transform="rotate(272)"/><circle r="3" fill="#E8B21E"/></g></svg>
+      <!-- sp-3: 연두 잎 #B4C77A -->
+      <svg viewBox="0 0 60 60" class="static-petal sp-3"><path d="M30 12 Q50.16 30 30 48 Q9.84 30 30 12 Z" fill="#B4C77A" opacity="0.55" transform="rotate(60 30 30)"/></svg>
+      <!-- sp-4: 꽃잎 낱장 #E8B21E -->
+      <svg viewBox="0 0 60 60" class="static-petal sp-4"><path d="M30 50 C41.44 40 40.56 18 32.2 10.8 Q30 8.4 27.8 10.8 C19.44 18 18.56 40 30 50 Z" fill="#E8B21E" opacity="0.55" transform="rotate(-50 30 30)"/></svg>
+    </div>
 
     <!-- 1. HERO -->
     <section class="hero" id="hero" aria-label="청첩장 메인">
       <div class="hero-frame">
         <img class="hero-illustration"
              src="images/hero-illustration.png"
-             alt="더스티 로즈 장미와 세이지 유칼립투스 가지의 워터컬러 보태니컬 일러스트"
+             alt="바람에 늘어진 개나리 가지와 흩날리는 꽃잎의 수채화 일러스트"
              fetchpriority="high"
              width="1024" height="1280">
         <div class="hero-content">
           <p class="hero-eyebrow script" data-hero-step="1">We&rsquo;re getting married</p>
-          <p class="hero-savedate en" data-hero-step="2">SAVE THE DATE<br><span class="hero-savedate-num">10 . 17 . 2026</span></p>
+          <p class="hero-savedate en" data-hero-step="2">SAVE THE DATE<br><span class="hero-savedate-num">04 . 17 . 2027</span></p>
           <h1 class="hero-names">
-            <span class="hero-name-ko" data-hero-step="3">김민준</span>
+            <span class="hero-name-ko" data-hero-step="3">서주완</span>
             <span class="hero-amp script" data-hero-step="4">&amp;</span>
-            <span class="hero-name-ko" data-hero-step="5">박서연</span>
+            <span class="hero-name-ko" data-hero-step="5">최윤경</span>
           </h1>
           <p class="hero-info" data-hero-step="6">
-            2026년 10월 17일 토요일 오후 2시<br>
-            그랜드 인터컨티넨탈 서울 파르나스
+            2027년 4월 17일 토요일 오전 11시<br>
+            <span class="nowrap">파티움하우스 수원</span> <span class="nowrap">2층 그레이스켈리홀</span>
           </p>
         </div>
       </div>
@@ -85,18 +89,18 @@
     <section class="section greeting reveal" id="greeting" aria-labelledby="greeting-heading">
       <p class="section-eyebrow en">INVITATION</p>
       <h2 class="section-title" id="greeting-heading">초대합니다</h2>
-      <img class="divider" src="images/floral-divider.png" alt="" loading="lazy" width="1536" height="512">
+      <img class="divider" src="images/floral-divider.png" alt="가로로 뻗은 개나리 가지 수채화 디바이더" aria-hidden="true" loading="lazy" width="1536" height="512">
       <div class="greeting-body">
-        <p class="reveal-line">가을의 햇살이 길어지는 날,</p>
-        <p class="reveal-line">저희 두 사람이</p>
-        <p class="reveal-line">서로의 곁을 약속합니다.</p>
-        <p class="reveal-line spacer">&nbsp;</p>
-        <p class="reveal-line">조용히 피어난 마음을 모아</p>
-        <p class="reveal-line">한 걸음을 내딛는 자리에</p>
-        <p class="reveal-line">귀한 걸음 더해 주신다면,</p>
-        <p class="reveal-line">오래 기억될 하루가 되겠습니다.</p>
+        <p class="reveal-line"><span>봄바람이 살랑이는 날,</span></p>
+        <p class="reveal-line"><span>저희 두 사람이</span></p>
+        <p class="reveal-line"><span>서로의 곁을 약속합니다.</span></p>
+        <p class="reveal-line spacer"><span>&nbsp;</span></p>
+        <p class="reveal-line"><span>조용히 피어난 마음을 모아</span></p>
+        <p class="reveal-line"><span>한 걸음을 내딛는 자리에</span></p>
+        <p class="reveal-line"><span>귀한 걸음 더해 주신다면,</span></p>
+        <p class="reveal-line"><span>오래 기억될 하루가 되겠습니다.</span></p>
       </div>
-      <p class="greeting-en script">A quiet promise, in autumn light.</p>
+      <p class="greeting-en script">A quiet promise, in spring light.</p>
     </section>
 
     <!-- 3. COUPLE INTRO -->
@@ -106,34 +110,34 @@
 
       <div class="couple-grid">
         <article class="couple-card couple-groom">
-          <p class="parents"><span>김재현</span> · <span>이수진</span> 의 장남</p>
-          <p class="couple-name">김민준 <span class="en">Minjun Kim</span></p>
+          <p class="parents"><span>서정표</span> · <span>이순영</span> 의 장남</p>
+          <p class="couple-name">서주완</p>
           <p class="couple-bio">한 걸음씩, 진심을 닮아가는 사람.</p>
         </article>
 
         <span class="couple-amp script" aria-hidden="true">&amp;</span>
 
         <article class="couple-card couple-bride">
-          <p class="parents"><span>박정훈</span> · <span>최은영</span> 의 장녀</p>
-          <p class="couple-name">박서연 <span class="en">Seoyeon Park</span></p>
+          <p class="parents"><span>최상덕</span> · <span>김순옥</span> 의 차녀</p>
+          <p class="couple-name">최윤경</p>
           <p class="couple-bio">곁에 머물수록 따뜻해지는 사람.</p>
         </article>
       </div>
-      <img class="divider divider-narrow" src="images/floral-divider.png" alt="" loading="lazy" width="1536" height="512">
+      <img class="divider divider-narrow" src="images/floral-divider.png" alt="가로로 뻗은 개나리 가지 수채화 디바이더" aria-hidden="true" loading="lazy" width="1536" height="512">
     </section>
 
     <!-- 4. CALENDAR + D-DAY -->
     <section class="section calendar-section reveal" id="calendar" aria-labelledby="calendar-heading">
-      <img class="corner-deco" src="images/floral-corner.png" alt="" loading="lazy" width="1024" height="1024" aria-hidden="true">
+      <img class="corner-deco" src="images/floral-corner.png" alt="좌상단 모서리에서 늘어진 개나리 가지 장식" loading="lazy" width="1024" height="1024" aria-hidden="true">
       <p class="section-eyebrow en">THE DAY</p>
       <h2 class="section-title" id="calendar-heading">예식일</h2>
       <p class="date-headline">
-        2026년 10월 17일 토요일<br>
-        오후 2시
+        2027년 4월 17일 토요일<br>
+        오전 11시
       </p>
 
-      <table class="cal" data-target="2026-10-17" aria-label="2026년 10월 캘린더">
-        <caption class="cal-caption en">OCTOBER 2026</caption>
+      <table class="cal" data-target="2027-04-17" aria-label="2027년 4월 캘린더">
+        <caption class="cal-caption en">APRIL 2027</caption>
         <thead>
           <tr>
             <th class="sun">SUN</th><th>MON</th><th>TUE</th><th>WED</th><th>THU</th><th>FRI</th><th class="sat">SAT</th>
@@ -143,9 +147,9 @@
       </table>
 
       <div class="dday-wrap" aria-live="polite">
-        <p class="dday-label">민준 · 서연의 결혼식까지</p>
+        <p class="dday-label">주완 · 윤경의 결혼식까지</p>
         <p class="dday">D - <span id="dday-num" data-target="0">0</span></p>
-        <p class="dday-sub">2026년 10월 17일 토요일 오후 2시<br>그랜드 인터컨티넨탈 서울 파르나스</p>
+        <p class="dday-sub">2027년 4월 17일 토요일 오전 11시<br><span class="nowrap">파티움하우스 수원</span> <span class="nowrap">2층 그레이스켈리홀</span></p>
       </div>
     </section>
 
@@ -161,20 +165,38 @@
 
       <div class="gallery-stage" role="region" aria-label="사진 갤러리" aria-roledescription="carousel">
         <ul class="gallery-track" id="gallery-track">
-          <li class="gallery-slide" aria-label="사진 1 / 5">
-            <img src="images/gallery-placeholder-1.png" alt="더스티 로즈와 세이지 부케 워터컬러 — 갤러리 1" loading="eager" width="1024" height="1280">
+          <li class="gallery-slide" aria-label="사진 1 / 11">
+            <img src="images/gallery-03.jpg" alt="초원에서 먼 곳을 바라보는 신랑 신부" loading="eager" decoding="async" width="1178" height="1600">
           </li>
-          <li class="gallery-slide" aria-label="사진 2 / 5">
-            <img src="images/gallery-placeholder-2.png" alt="유칼립투스 줄기와 장미 봉오리 워터컬러 — 갤러리 2" loading="lazy" width="1024" height="1280">
+          <li class="gallery-slide" aria-label="사진 2 / 11">
+            <img src="images/gallery-04.jpg" alt="숲 앞 잔디밭에서 손을 잡고 마주 선 신랑 신부" loading="lazy" decoding="async" width="1191" height="1600">
           </li>
-          <li class="gallery-slide" aria-label="사진 3 / 5">
-            <img src="images/gallery-placeholder-3.png" alt="흩날리는 장미 꽃잎 워터컬러 — 갤러리 3" loading="lazy" width="1024" height="1280">
+          <li class="gallery-slide" aria-label="사진 3 / 11">
+            <img src="images/gallery-09.jpg" alt="꽃을 들고 입맞추는 신랑 신부" loading="lazy" decoding="async" width="1204" height="1600">
           </li>
-          <li class="gallery-slide" aria-label="사진 4 / 5">
-            <img src="images/gallery-placeholder-4.png" alt="하단 보태니컬 군집 워터컬러 — 갤러리 4" loading="lazy" width="1024" height="1280">
+          <li class="gallery-slide" aria-label="사진 4 / 11">
+            <img src="images/gallery-07.jpg" alt="푸른 하늘 아래 부케를 들어 올린 신부와 신랑" loading="lazy" decoding="async" width="1177" height="1600">
           </li>
-          <li class="gallery-slide" aria-label="사진 5 / 5">
-            <img src="images/gallery-placeholder-5.png" alt="원형 보태니컬 리스 워터컬러 — 갤러리 5" loading="lazy" width="1024" height="1280">
+          <li class="gallery-slide" aria-label="사진 5 / 11">
+            <img src="images/gallery-08.jpg" alt="숲속 잔디에 기대어 앉은 신랑 신부" loading="lazy" decoding="async" width="1205" height="1600">
+          </li>
+          <li class="gallery-slide" aria-label="사진 6 / 11">
+            <img src="images/gallery-10.jpg" alt="숲에서 비눗방울을 날리는 신랑 신부" loading="lazy" decoding="async" width="1191" height="1600">
+          </li>
+          <li class="gallery-slide" aria-label="사진 7 / 11">
+            <img src="images/gallery-11.jpg" alt="구름 낀 하늘 아래 언덕에 선 신랑 신부" loading="lazy" decoding="async" width="1188" height="1600">
+          </li>
+          <li class="gallery-slide" aria-label="사진 8 / 11">
+            <img src="images/gallery-05.jpg" alt="하트 풍선 사이로 얼굴을 내민 신랑 신부" loading="lazy" decoding="async" width="1125" height="1600">
+          </li>
+          <li class="gallery-slide" aria-label="사진 9 / 11">
+            <img src="images/gallery-06.jpg" alt="반지 모양 풍선을 든 신랑과 부케를 든 신부" loading="lazy" decoding="async" width="1124" height="1600">
+          </li>
+          <li class="gallery-slide" aria-label="사진 10 / 11">
+            <img src="images/gallery-02.jpg" alt="선글라스를 쓰고 어린 시절 사진을 든 신랑 신부" loading="lazy" decoding="async" width="1150" height="1600">
+          </li>
+          <li class="gallery-slide" aria-label="사진 11 / 11">
+            <img src="images/gallery-01.jpg" alt="스튜디오에서 부케를 들고 나란히 선 신랑 신부" loading="lazy" decoding="async" width="1280" height="1600">
           </li>
         </ul>
         <button class="gallery-nav gallery-prev" type="button" aria-label="이전 사진">
@@ -184,9 +206,10 @@
           <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
       </div>
-      <ol class="gallery-dots" id="gallery-dots" aria-hidden="true">
-        <li class="active"></li><li></li><li></li><li></li><li></li>
-      </ol>
+      <div class="gallery-meta">
+        <ol class="gallery-dots" id="gallery-dots" aria-hidden="true"><!-- JS 가 슬라이드 수만큼 생성 --></ol>
+        <p class="gallery-counter" id="gallery-counter" aria-hidden="true"><span id="gallery-cur">1</span> / <span id="gallery-total">11</span></p>
+      </div>
       <p class="gallery-hint">사진을 누르면 크게 볼 수 있어요</p>
     </section>
 
@@ -194,49 +217,106 @@
     <section class="section venue reveal" id="venue" aria-labelledby="venue-heading">
       <p class="section-eyebrow en">LOCATION</p>
       <h2 class="section-title" id="venue-heading">오시는 길</h2>
-      <p class="venue-name">그랜드 인터컨티넨탈 서울 파르나스</p>
-      <p class="venue-hall">5층 그랜드볼룸</p>
-      <p class="venue-addr">서울특별시 강남구 테헤란로 521</p>
+      <p class="venue-name">파티움하우스 수원</p>
+      <p class="venue-hall">2층 그레이스켈리홀</p>
+      <p class="venue-addr">경기 수원시 팔달구 효원로 289</p>
+      <p class="venue-addr-sub">(지번) 경기 수원시 팔달구 인계동 1124-5번지</p>
 
-      <!-- 지도: 카카오맵 SDK가 없으면 정적 placeholder -->
-      <!-- placeholder: KAKAO_JS_KEY 가 설정되면 카카오맵 SDK가 활성화됩니다. (script.js 의 KAKAO_JS_KEY 상수 확인) -->
-      <div id="map" class="map-static" aria-label="예식장 위치 지도">
-        <div class="map-pin">
-          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 22s-7-7.58-7-12a7 7 0 1 1 14 0c0 4.42-7 12-7 12z" fill="currentColor"/><circle cx="12" cy="10" r="2.4" fill="#FBF7F3"/></svg>
-          <span>그랜드 인터컨티넨탈 서울 파르나스</span>
+      <!-- 약도: 탭/Enter/Space 로 lightbox 단독 확대 (핀치 줌·더블탭 지원) -->
+      <figure class="venue-map">
+        <div class="venue-map-card" id="venue-map" role="button" tabindex="0" aria-label="약도 크게 보기">
+          <img src="images/venue-map.png" alt="파티움하우스 수원 약도 — 수인분당선 수원시청역 10번 출구 바로 앞, 주차는 농협·경인일보·파비오더씨타·경기아트센터" loading="lazy" decoding="async" width="1122" height="838">
         </div>
-      </div>
+        <figcaption class="venue-map-hint">약도를 누르면 크게 볼 수 있어요</figcaption>
+      </figure>
 
       <div class="venue-actions">
-        <a class="btn" href="https://map.kakao.com/?q=%EA%B7%B8%EB%9E%9C%EB%93%9C%20%EC%9D%B8%ED%84%B0%EC%BB%A8%ED%8B%B0%EB%84%A8%ED%83%88%20%EC%84%9C%EC%9A%B8%20%ED%8C%8C%EB%A5%B4%EB%82%98%EC%8A%A4" target="_blank" rel="noopener">카카오맵</a>
-        <a class="btn" href="https://map.naver.com/v5/search/%EA%B7%B8%EB%9E%9C%EB%93%9C%20%EC%9D%B8%ED%84%B0%EC%BB%A8%ED%8B%B0%EB%84%A8%ED%83%88%20%EC%84%9C%EC%9A%B8%20%ED%8C%8C%EB%A5%B4%EB%82%98%EC%8A%A4" target="_blank" rel="noopener">네이버지도</a>
-        <a class="btn" href="https://tmap.life/02fcf830" target="_blank" rel="noopener">T map</a>
+        <a class="btn" href="https://map.kakao.com/?q=%ED%8C%8C%ED%8B%B0%EC%9B%80%ED%95%98%EC%9A%B0%EC%8A%A4%20%EC%88%98%EC%9B%90" target="_blank" rel="noopener">카카오맵</a>
+        <a class="btn" href="https://map.naver.com/v5/search/%ED%8C%8C%ED%8B%B0%EC%9B%80%ED%95%98%EC%9A%B0%EC%8A%A4%20%EC%88%98%EC%9B%90" target="_blank" rel="noopener">네이버지도</a>
+        <button type="button" class="btn" data-copy-text="경기 수원시 팔달구 효원로 289" aria-label="예식장 도로명 주소 복사">주소 복사</button>
       </div>
 
       <div class="directions">
         <article>
-          <h3>지하철</h3>
-          <p>2호선 · 9호선 삼성중앙역 5번 출구<br>도보 약 3분</p>
+          <h3>자가용</h3>
+          <p>네비게이션에 "파티움하우스 수원" 입력<br>도로명 주소: 경기 수원시 팔달구 효원로 289<br><span class="muted">지번 주소: 경기 수원시 팔달구 인계동 1124-5번지</span></p>
         </article>
         <article>
-          <h3>버스</h3>
-          <p>무역센터 · 현대백화점 정류장 하차</p>
-          <ul class="bus-list">
-            <li><span class="bus-tag bus-blue">간선</span> 146 · 341 · 360 · 740</li>
-            <li><span class="bus-tag bus-green">지선</span> 2415 · 4318</li>
-            <li><span class="bus-tag bus-red">광역</span> 9404 · 9407 · 9507</li>
+          <h3>주차</h3>
+          <p>하객 주차: 농협, 경인일보, 파비오더씨타, 경기아트센터<br><span class="muted">※ 웨딩홀 입구에서 주차요원 안내를 받고 이동하시기 바랍니다.</span></p>
+        </article>
+        <article>
+          <h3>지하철</h3>
+          <p>수인분당선 수원시청역 10번 출구 바로&nbsp;앞</p>
+        </article>
+        <article>
+          <h3>시내버스</h3>
+          <ul class="route-list">
+            <li>
+              <p class="route-from">역전정류장</p>
+              <p class="route-line"><span class="bus-tag">13-1</span><span class="bus-tag">92-1</span></p>
+              <p class="route-stop">수원시청역 9번 출구, 국민연금공단 하차</p>
+            </li>
+            <li>
+              <p class="route-from">매산시장앞</p>
+              <p class="route-line"><span class="bus-tag">51</span></p>
+              <p class="route-stop">수원시청역 1번 출구, 국민연금공단, 경인일보 하차</p>
+            </li>
+            <li>
+              <p class="route-from">수원버스터미널</p>
+              <p class="route-line"><span class="bus-tag">80</span><span class="bus-tag">81</span></p>
+              <p class="route-stop">수원시청역 1번 출구, 국민연금공단, 경인일보 하차</p>
+            </li>
+            <li>
+              <p class="route-from">아주대, 법원사거리</p>
+              <p class="route-line"><span class="bus-tag">81</span></p>
+              <p class="route-stop">수원시청역 10번 출구, 국민연금공단, 경인일보 하차</p>
+            </li>
           </ul>
         </article>
         <article>
-          <h3>자가용 / 주차</h3>
-          <p>호텔 지하 주차장 이용<br>예식 시간 기준 3시간 무료 주차 지원<br><span class="muted">네비게이션: "그랜드 인터컨티넨탈 서울 파르나스" 또는 "테헤란로 521"</span></p>
+          <h3>시외버스</h3>
+          <ul class="route-list">
+            <li>
+              <p class="route-from">강남역 7번 출구, 양재역 7번 출구</p>
+              <dl class="route-items">
+                <dt><span class="bus-tag">3007</span></dt>
+                <dd>매탄주공4단지, 매탄1동주민센터 하차 후 81번 버스 환승 → 수원시청역 10번 출구, 경인일보 하차</dd>
+                <dt><span class="bus-tag">3002</span></dt>
+                <dd>수원시청역 8번 출구, 씨네파크 하차</dd>
+              </dl>
+            </li>
+            <li>
+              <p class="route-from">사당역 4번 출구</p>
+              <dl class="route-items">
+                <dt><span class="bus-tag">7000</span></dt>
+                <dd>구)법원사거리 하차 후 81번 환승 → 수원시청역 10번 출구, 경인일보 하차</dd>
+                <dt><span class="bus-tag">7001</span></dt>
+                <dd>매탄1동주민센터 하차 후 81번 환승 → 수원시청역 10번 출구, 경인일보 하차</dd>
+              </dl>
+            </li>
+            <li>
+              <p class="route-from">잠실역</p>
+              <dl class="route-items">
+                <dt><span class="bus-tag">M5342</span></dt>
+                <dd>망포역 4번 출구 하차 후 61번 → 수원시청역 10번 출구, 경인일보 하차</dd>
+              </dl>
+            </li>
+            <li>
+              <p class="route-from">서현역(AK프라자)</p>
+              <dl class="route-items">
+                <dt><span class="bus-tag">4000</span></dt>
+                <dd>수원시청역 8번 출구, 씨네파크 하차</dd>
+              </dl>
+            </li>
+          </ul>
         </article>
       </div>
     </section>
 
     <!-- 7. ACCOUNT -->
     <section class="section account reveal" id="account" aria-labelledby="account-heading">
-      <img class="corner-deco corner-deco-flip" src="images/floral-corner.png" alt="" loading="lazy" width="1024" height="1024" aria-hidden="true">
+      <img class="corner-deco corner-deco-flip" src="images/floral-corner.png" alt="좌상단 모서리에서 늘어진 개나리 가지 장식" loading="lazy" width="1024" height="1024" aria-hidden="true">
       <p class="section-eyebrow en">WITH HEART</p>
       <h2 class="section-title" id="account-heading">마음 전하실 곳</h2>
       <p class="account-message">
@@ -249,11 +329,10 @@
       <details class="acc-group">
         <summary>신랑측 계좌번호</summary>
         <ul class="acc-list">
-          <!-- placeholder: 실제 은행/계좌번호로 교체 필요 -->
           <li>
-            <p class="acc-name">신랑 김민준</p>
-            <p class="acc-num">○○은행 ○○○-○○○○-○○○○</p>
-            <button type="button" class="copy-btn" data-copy="○○은행 ○○○-○○○○-○○○○ 김민준" aria-label="신랑 김민준 계좌번호 복사">
+            <p class="acc-name">신랑 서주완</p>
+            <p class="acc-num">신한은행 110-610-845780</p>
+            <button type="button" class="copy-btn" data-copy="110610845780" aria-label="신랑 서주완 계좌번호 복사">
               <span class="copy-default">
                 <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
                 복사
@@ -265,17 +344,17 @@
             </button>
           </li>
           <li>
-            <p class="acc-name">신랑 아버지 김재현</p>
-            <p class="acc-num">○○은행 ○○○-○○○○-○○○○</p>
-            <button type="button" class="copy-btn" data-copy="○○은행 ○○○-○○○○-○○○○ 김재현" aria-label="김재현 계좌번호 복사">
+            <p class="acc-name">신랑 아버지 서정표</p>
+            <p class="acc-num">농협 351-0303-6265-43</p>
+            <button type="button" class="copy-btn" data-copy="3510303626543" aria-label="신랑 아버지 서정표 계좌번호 복사">
               <span class="copy-default"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>복사</span>
               <span class="copy-done" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M5 12l4 4 10-10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>완료</span>
             </button>
           </li>
           <li>
-            <p class="acc-name">신랑 어머니 이수진</p>
-            <p class="acc-num">○○은행 ○○○-○○○○-○○○○</p>
-            <button type="button" class="copy-btn" data-copy="○○은행 ○○○-○○○○-○○○○ 이수진" aria-label="이수진 계좌번호 복사">
+            <p class="acc-name">신랑 어머니 이순영</p>
+            <p class="acc-num">농축협 352-0618-8390-13</p>
+            <button type="button" class="copy-btn" data-copy="3520618839013" aria-label="신랑 어머니 이순영 계좌번호 복사">
               <span class="copy-default"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>복사</span>
               <span class="copy-done" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M5 12l4 4 10-10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>완료</span>
             </button>
@@ -287,25 +366,25 @@
         <summary>신부측 계좌번호</summary>
         <ul class="acc-list">
           <li>
-            <p class="acc-name">신부 박서연</p>
-            <p class="acc-num">○○은행 ○○○-○○○○-○○○○</p>
-            <button type="button" class="copy-btn" data-copy="○○은행 ○○○-○○○○-○○○○ 박서연" aria-label="신부 박서연 계좌번호 복사">
+            <p class="acc-name">신부 최윤경</p>
+            <p class="acc-num">NH농협은행 302-1980-1732-61</p>
+            <button type="button" class="copy-btn" data-copy="3021980173261" aria-label="신부 최윤경 계좌번호 복사">
               <span class="copy-default"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>복사</span>
               <span class="copy-done" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M5 12l4 4 10-10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>완료</span>
             </button>
           </li>
           <li>
-            <p class="acc-name">신부 아버지 박정훈</p>
-            <p class="acc-num">○○은행 ○○○-○○○○-○○○○</p>
-            <button type="button" class="copy-btn" data-copy="○○은행 ○○○-○○○○-○○○○ 박정훈" aria-label="박정훈 계좌번호 복사">
+            <p class="acc-name">신부 아버지 최상덕</p>
+            <p class="acc-num">신한은행 110-432-250485</p>
+            <button type="button" class="copy-btn" data-copy="110432250485" aria-label="신부 아버지 최상덕 계좌번호 복사">
               <span class="copy-default"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>복사</span>
               <span class="copy-done" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M5 12l4 4 10-10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>완료</span>
             </button>
           </li>
           <li>
-            <p class="acc-name">신부 어머니 최은영</p>
-            <p class="acc-num">○○은행 ○○○-○○○○-○○○○</p>
-            <button type="button" class="copy-btn" data-copy="○○은행 ○○○-○○○○-○○○○ 최은영" aria-label="최은영 계좌번호 복사">
+            <p class="acc-name">신부 어머니 김순옥</p>
+            <p class="acc-num">새마을금고 9002-1395-8968-1</p>
+            <button type="button" class="copy-btn" data-copy="9002139589681" aria-label="신부 어머니 김순옥 계좌번호 복사">
               <span class="copy-default"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>복사</span>
               <span class="copy-done" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M5 12l4 4 10-10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>완료</span>
             </button>
@@ -314,21 +393,7 @@
       </details>
     </section>
 
-    <!-- 8. RSVP -->
-    <section class="section rsvp reveal" id="rsvp" aria-labelledby="rsvp-heading">
-      <p class="section-eyebrow en">RSVP</p>
-      <h2 class="section-title" id="rsvp-heading">참석 의사 전달</h2>
-      <p class="rsvp-message">
-        참석 의사를 미리 전해 주시면<br>
-        더욱 정성껏 자리를 준비하겠습니다.<br><br>
-        소중한 시간 내어 주시는 모든 분들께<br>
-        미리 감사의 마음을 전합니다.
-      </p>
-      <!-- placeholder: RSVP_FORM_URL 외부 폼(Tally / Google Form / FormSubmit)으로 교체 필요 -->
-      <a class="btn primary" href="#" id="rsvp-link" target="_blank" rel="noopener" data-placeholder-url>마음 전하기</a>
-    </section>
-
-    <!-- 9. GUESTBOOK -->
+    <!-- 8. GUESTBOOK -->
     <section class="section guestbook reveal" id="guestbook" aria-labelledby="guestbook-heading">
       <p class="section-eyebrow en">GUEST BOOK</p>
       <h2 class="section-title" id="guestbook-heading">방명록</h2>
@@ -342,7 +407,7 @@
       <a class="btn" href="#" id="guestbook-link" target="_blank" rel="noopener" data-placeholder-url>마음 남기기</a>
     </section>
 
-    <!-- 10. SHARE -->
+    <!-- 9. SHARE -->
     <section class="section share reveal" id="share" aria-labelledby="share-heading">
       <p class="section-eyebrow en">SHARE</p>
       <h2 class="section-title" id="share-heading">청첩장 공유</h2>
@@ -358,8 +423,8 @@
 
     <footer class="card-footer">
       <p class="script">Thank you</p>
-      <p class="footer-line">2026 . 10 . 17</p>
-      <p class="footer-line en">민준 &amp; 서연</p>
+      <p class="footer-line">2027 . 04 . 17</p>
+      <p class="footer-line en">주완 &amp; 윤경</p>
     </footer>
   </main>
 

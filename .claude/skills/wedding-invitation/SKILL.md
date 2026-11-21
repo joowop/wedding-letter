@@ -69,7 +69,7 @@ TaskCreate(작업: "_workspace/04_motion-designer_motion-spec.md 작성", owner:
 
 각 에이전트에게 첫 메시지로 다음을 전달:
 - copy-writer: "당신은 .claude/agents/copy-writer.md 정의에 따라 작동합니다. .claude/skills/wedding-copywriting/SKILL.md를 참고하여 _workspace/01_concept-director_concept-sheet.md를 읽고 모든 카피를 _workspace/02_copy-writer_copy.md로 작성하세요."
-- image-artist: "당신은 .claude/agents/image-artist.md 정의에 따라 작동합니다. .claude/skills/wedding-imagery-gpt-image2/SKILL.md를 참고하여 _workspace/01_concept-director_concept-sheet.md를 읽고 필요한 이미지를 글로벌 gpt-image2 스킬로 생성한 후 images/에 저장하고 매니페스트를 _workspace/03_image-artist_manifest.md로 작성하세요. 모든 이미지는 일관된 스타일을 유지해야 합니다."
+- image-artist: "당신은 .claude/agents/image-artist.md 정의에 따라 작동합니다. .claude/skills/wedding-imagery-gpt-image2/SKILL.md를 참고하여 _workspace/01_concept-director_concept-sheet.md를 읽고 필요한 이미지를 프로젝트의 gpt-image2 스킬(.claude/skills/gpt-image2/SKILL.md)로 생성한 후 images/에 저장하고 매니페스트를 _workspace/03_image-artist_manifest.md로 작성하세요. 모든 이미지는 일관된 스타일을 유지해야 합니다."
 - motion-designer: "당신은 .claude/agents/motion-designer.md 정의에 따라 작동합니다. .claude/skills/wedding-motion-design/SKILL.md를 참고하여 _workspace/01_concept-director_concept-sheet.md의 mood_keywords에 부합하는 모션 무드를 결정하고, 애니메이션 배경 1-2종 + 인터랙션 인벤토리 + 스크롤 시퀀스를 _workspace/04_motion-designer_motion-spec.md로 작성하세요. 모든 모션은 prefers-reduced-motion 대체안을 함께 명시해야 합니다."
 
 세 에이전트 모두 완료하면 팀 해체(`TeamDelete`) 후 Phase 3로. 도중에 motion-designer가 추가 자산이 필요하다고 판단하면 image-artist에게 SendMessage로 협의 가능.

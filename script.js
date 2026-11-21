@@ -1,6 +1,6 @@
 /* =========================================================
    Wedding Invitation — script.js
-   김민준 ♡ 박서연 (2026.10.17)
+   서주완 ♡ 최윤경 (2027.04.17)
    Vanilla JS only. Implements motion-spec.md Must/Should items.
    ========================================================= */
 (function () {
@@ -10,13 +10,12 @@
   // PLACEHOLDERS — 실제 운영 시 아래 값을 채워주세요.
   // ---------------------------------------------------------
   const KAKAO_JS_KEY     = ''; // placeholder: 카카오 JavaScript 키 (https://developers.kakao.com/)
-  const RSVP_FORM_URL    = ''; // placeholder: Tally / Google Form / FormSubmit URL
   const GUESTBOOK_URL    = ''; // placeholder: 외부 방명록 폼 URL
-  const SHARE_TITLE      = '김민준 ♡ 박서연 결혼합니다';
-  const SHARE_DESC       = '2026년 10월 17일 토요일 오후 2시\n그랜드 인터컨티넨탈 서울 그랜드볼룸';
+  const SHARE_TITLE      = '서주완 ♡ 최윤경 결혼합니다';
+  const SHARE_DESC       = '2027년 4월 17일 토요일 오전 11시\n파티움하우스 수원 2층 그레이스켈리홀';
   const SHARE_IMAGE      = location.origin + location.pathname.replace(/\/[^/]*$/, '/') + 'images/og-thumbnail.png';
-  const TARGET_DATE_STR  = '2026-10-17';
-  const TARGET_HOUR      = 14;
+  const TARGET_DATE_STR  = '2027-04-17';
+  const TARGET_HOUR      = 11;
 
   // ---------------------------------------------------------
   // HELPERS
@@ -37,6 +36,17 @@
     requestAnimationFrame(() => {
       requestAnimationFrame(() => hero.classList.add('is-loaded'));
     });
+
+    // 스크롤 시 스크롤 인디케이터 fadeOut 300ms (motion §2-1 step 7)
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        hero.classList.toggle('is-scrolled', window.scrollY > 40);
+        ticking = false;
+      });
+    }, { passive: true });
   }
 
   // ---------------------------------------------------------
@@ -45,6 +55,18 @@
   function setupReveal() {
     const targets = $$('.reveal');
     if (!targets.length) return;
+
+    // 공통 섹션(2-6): 헤더 → 본문 stagger 80ms. 코너 장식은 제외.
+    $$('.venue, .account, .guestbook, .share').forEach(sec => {
+      sec.classList.add('reveal-stagger');
+      let i = 0;
+      Array.from(sec.children).forEach(child => {
+        if (child.classList.contains('corner-deco')) return;
+        child.classList.add('stagger-item');
+        child.style.setProperty('--stagger-i', String(i++));
+      });
+    });
+
     if (isReduced()) {
       targets.forEach(el => el.classList.add('is-visible'));
       return;
@@ -65,105 +87,288 @@
   }
 
   // ---------------------------------------------------------
-  // 3. Petals background canvas (motion §1-A)
+  // 3. 개나리 꽃잎 파티클 (motion §1-A)
+  //    꽃잎 낱장 70% / 네 갈래 꽃 20% / 연두 잎 10%, dt 기반 적분,
+  //    좌우 살랑임 + 뒤집힘 + 8~15s 봄바람 돌풍, 개수·DPR 강등, 탭 숨김·lightbox 시 정지
   // ---------------------------------------------------------
+  const petalsAPI = { pause() {}, resume() {} };
+
   function setupPetals() {
-    if (isReduced()) return;
+    if (isReduced()) return;                       // §1-A-6: canvas 루프 미생성 (정적 장식은 CSS가 표시)
     const canvas = $('.bg-petals');
-    if (!canvas) return;
+    const staticDeco = $('.bg-petals-static');
+    if (!canvas || !window.Path2D) return;
     const ctx = canvas.getContext('2d');
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    if (!ctx) return;
 
-    let W = 0, H = 0;
-    let petals = [];
-    let count = 24;
-    let running = true;
-    let frameCount = 0;
-    let measureStart = 0;
-    let rafId = null;
+    // --- 파라미터 (§1-A-4 CFG 그대로) ---
+    const CFG = {
+      mix: { petal: 0.70, flower: 0.20, leaf: 0.10 },
+      colors: {
+        petal: [['#F2C230', .5], ['#F7D561', .3], ['#E8B21E', .2]],
+        leaf:  [['#B4C77A', .7], ['#C5D48F', .3]],
+      },
+      size:    { petal: [10, 18], flower: [14, 22], leaf: [10, 16] },
+      alpha:   { petal: [.35, .70], flower: [.40, .70], leaf: [.35, .55] },
+      passSec: [25, 15],                            // z=0 → 25s, z=1 → 15s
+      swayAmp: { petal: [20, 50], flower: [20, 40], leaf: [20, 50] },
+      swayPer: { petal: [3, 6],   flower: [4, 6],   leaf: [3, 5] },
+      lean:    { petal: .35, flower: .15, leaf: .30 },
+      spin:    { petal: [.3, .9], flower: [.1, .4], leaf: [.2, .6] },
+      flip:    { petal: [1.6, 3.2], flower: [.8, 1.6], leaf: [1.2, 2.4] },
+      sens:    { petal: [.7, 1], flower: [.6, .9], leaf: [.7, 1] },
+      windBase: 10,
+      gust: { gap: [8, 15], first: [4, 7], dur: [2, 3], peak: 45, spin: .8, flip: .6, fall: .15 },
+      margin: 40,
+    };
+    const rand = (a, b) => a + Math.random() * (b - a);
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const pick = list => { let r = Math.random(); for (const [v, w] of list) { if ((r -= w) <= 0) return v; } return list[0][0]; };
 
-    function resize() {
-      W = window.innerWidth;
-      H = window.innerHeight;
-      canvas.width  = W * dpr;
-      canvas.height = H * dpr;
-      canvas.style.width  = W + 'px';
-      canvas.style.height = H + 'px';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // --- 형태: 단위 Path2D 1회 생성 후 캐시 (§1-A-3) ---
+    function petalPath(L) {                        // base (0, +L/2) → tip (0, -L/2)
+      const hw = 0.22 * L, p = new Path2D();
+      p.moveTo(0, 0.5 * L);
+      p.bezierCurveTo( 1.3 * hw,  0.25 * L,  1.2 * hw, -0.30 * L,  0.25 * hw, -0.48 * L);
+      p.quadraticCurveTo(0, -0.54 * L, -0.25 * hw, -0.48 * L);
+      p.bezierCurveTo(-1.2 * hw, -0.30 * L, -1.3 * hw,  0.25 * L,  0,         0.5 * L);
+      p.closePath();
+      return p;
+    }
+    const UNIT_PETAL = petalPath(1);
+    const UNIT_FLOWER_PETAL = petalPath(0.5);
+    const FLOWER_ANGLES = [0, 92, 178, 272].map(d => d * Math.PI / 180);
+    const UNIT_LEAF = (() => {
+      const hw = 0.28, p = new Path2D();
+      p.moveTo(0, -0.5);
+      p.quadraticCurveTo( 2 * hw, 0, 0, 0.5);
+      p.quadraticCurveTo(-2 * hw, 0, 0, -0.5);
+      p.closePath();
+      return p;
+    })();
+    const UNIT_VEIN = (() => {                     // (Nice) 중앙 잎맥
+      const p = new Path2D();
+      p.moveTo(0, 0.45);
+      p.lineTo(0, -0.2);
+      return p;
+    })();
+
+    function drawFlower(petalColor, centerColor) { // ctx는 이미 translate/rotate/scale(D) 상태
+      ctx.fillStyle = petalColor;
+      for (const a of FLOWER_ANGLES) {
+        ctx.save();
+        ctx.rotate(a);
+        ctx.translate(0, -0.25);
+        ctx.fill(UNIT_FLOWER_PETAL);
+        ctx.restore();
+      }
+      ctx.fillStyle = centerColor;
+      ctx.beginPath();
+      ctx.arc(0, 0, 0.08, 0, Math.PI * 2);
+      ctx.fill();
     }
 
-    class Petal {
-      constructor(init) { this.reset(init); }
-      reset(init) {
-        this.x = Math.random() * W;
-        this.y = init ? Math.random() * H : -30;
-        this.size = 8 + Math.random() * 8;             // 8 ~ 16
-        this.rot = Math.random() * Math.PI * 2;
-        this.rotSpeed = (Math.random() - 0.5) * 0.03;
-        this.dur = 14000 + Math.random() * 8000;       // 14~22s
-        this.start = performance.now() - (init ? Math.random() * this.dur : 0);
-        this.swayAmp = 20 + Math.random() * 20;
-        this.swayPhase = Math.random() * Math.PI * 2;
-        this.opacity = 0.18 + Math.random() * 0.14;    // 0.18 ~ 0.32
-        this.color = Math.random() < 0.7 ? '#C9A2A2' : '#A8B59C';
-        this.baseX = this.x;
+    // --- 바람 (전역 1개 상태, 시뮬레이션 시계 기준 → 일시정지 후에도 돌풍 타이밍 유지) ---
+    const wind = { env: 0, gustStart: 0, gustDur: 0, nextGust: 0 };
+    let simT = 0;
+    function updateWind(t) {
+      if (!wind.nextGust) wind.nextGust = t + rand(...CFG.gust.first);
+      if (!wind.gustDur && t >= wind.nextGust) { wind.gustStart = t; wind.gustDur = rand(...CFG.gust.dur); }
+      if (wind.gustDur) {
+        const u = (t - wind.gustStart) / wind.gustDur;
+        if (u >= 1) { wind.env = 0; wind.gustDur = 0; wind.nextGust = t + rand(...CFG.gust.gap); }
+        else wind.env = 0.5 - 0.5 * Math.cos(2 * Math.PI * u);
       }
-      step(now) {
-        const t = (now - this.start) / this.dur;
-        if (t > 1) { this.reset(false); return; }
-        this.y = -30 + (H + 60) * t;
-        this.x = this.baseX + Math.sin(now / 1000 + this.swayPhase) * this.swayAmp;
-        this.rot += this.rotSpeed;
+    }
+
+    class Particle {
+      constructor(W, H, init) { this.reset(W, H, init); }
+      reset(W, H, init) {
+        const r = Math.random();
+        this.type = r < CFG.mix.petal ? 'petal' : r < CFG.mix.petal + CFG.mix.flower ? 'flower' : 'leaf';
+        const t = this.type, z = Math.random();
+        this.color  = t === 'leaf' ? pick(CFG.colors.leaf) : pick(CFG.colors.petal);
+        this.center = this.color === '#E8B21E' ? '#F7D561' : '#E8B21E';   // flower 중심점
+        this.vein   = this.color === '#E8B21E' ? '#F2C230' : '#E8B21E';   // petal 잎맥
+        this.size   = lerp(...CFG.size[t], z);
+        this.alpha  = lerp(...CFG.alpha[t], z);
+        this.fall   = (H + 2 * CFG.margin) / lerp(...CFG.passSec, z);    // px/s
+        this.amp    = rand(...CFG.swayAmp[t]);
+        this.per    = rand(...CFG.swayPer[t]);
+        this.phase  = Math.random() * Math.PI * 2;
+        this.spin   = rand(...CFG.spin[t]) * (Math.random() < .5 ? -1 : 1);
+        this.flipV  = rand(...CFG.flip[t]);
+        this.flipPh = Math.random() * Math.PI * 2;
+        this.sens   = lerp(...CFG.sens[t], z);
+        this.rot    = Math.random() * Math.PI * 2;
+        this.x0     = init ? Math.random() * W : rand(-0.15 * W, W);           // 바람 상류 바이어스
+        this.y      = init ? rand(-CFG.margin, H) : -CFG.margin - Math.random() * 60;
+        this.drift  = 0;
+        this.swayT  = Math.random() * this.per;
+        this.x = this.x0; this.lean = 0;
+      }
+      step(dt, W, H) {
+        const e = wind.env, g = CFG.gust;
+        this.y      += this.fall * (1 - g.fall * e) * dt;
+        this.drift  += (CFG.windBase + g.peak * e) * this.sens * dt;
+        this.swayT  += dt;
+        this.rot    += this.spin  * (1 + g.spin * e) * dt;
+        this.flipPh += this.flipV * (1 + g.flip * e) * dt;
+        const arg = (2 * Math.PI * this.swayT) / this.per + this.phase;
+        this.x    = this.x0 + this.drift + Math.sin(arg) * this.amp;
+        this.lean = Math.cos(arg) * CFG.lean[this.type];
+        const m = CFG.margin;
+        if (this.x > W + m) this.x0 -= W + 2 * m;           // 좌우 랩어라운드
+        else if (this.x < -m) this.x0 += W + 2 * m;
+        if (this.y > H + m) this.reset(W, H, false);
       }
       draw() {
+        const c = Math.cos(this.flipPh);
         ctx.save();
-        ctx.globalAlpha = this.opacity;
         ctx.translate(this.x, this.y);
-        ctx.rotate(this.rot);
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.ellipse(0, 0, this.size * 0.4, this.size, 0, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.rotate(this.rot + this.lean);
+        if (this.type === 'flower') {
+          ctx.scale(this.size, this.size * (0.6 + 0.4 * Math.abs(c)));   // 기울어짐만
+          ctx.globalAlpha = this.alpha;
+          drawFlower(this.color, this.center);
+        } else {
+          const sx = Math.abs(c) < 0.15 ? (c < 0 ? -0.15 : 0.15) : c;     // 완전 소멸(깜빡임) 방지
+          ctx.scale(this.size * sx, this.size);
+          ctx.globalAlpha = this.alpha * (c < 0 ? 0.8 : 1);               // 뒷면은 살짝 옅게
+          ctx.fillStyle = this.color;
+          ctx.fill(this.type === 'leaf' ? UNIT_LEAF : UNIT_PETAL);
+          if (this.type === 'petal' && this.size >= 14) {                 // (Nice) 잎맥 0.6px
+            ctx.globalAlpha *= 0.5;
+            ctx.strokeStyle = this.vein;
+            ctx.lineWidth = 0.6 / (this.size * Math.abs(sx));
+            ctx.stroke(UNIT_VEIN);
+          }
+        }
         ctx.restore();
       }
     }
 
-    function spawn() {
-      petals = Array.from({ length: count }, () => new Petal(true));
+    // --- 개수·DPR (§1-A-2 개수 결정) ---
+    const conn = navigator.connection || {};
+    const lowEnd = (navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 4) ||
+                   (navigator.deviceMemory > 0 && navigator.deviceMemory <= 2) ||
+                   !!conn.saveData;
+    let degrade = 0;                                 // 0: 정상, 1: FPS 강등 1단계, 2: OFF
+    let W = 0, H = 0, maxH = 0;
+    let particles = [];
+
+    function baseCount(w) { return w < 360 ? 12 : w < 480 ? 16 : w < 1024 ? 18 : 20; }
+    function targetCount() {
+      let c = baseCount(W);
+      if (lowEnd) c = Math.min(c, 12);
+      if (degrade >= 1) c = Math.max(8, Math.round(c * 0.6));
+      return c;
+    }
+    function sizeCanvas() {
+      const cap = degrade >= 1 ? 1 : (lowEnd ? 1.5 : 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, cap);
+      canvas.width  = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      canvas.style.width  = W + 'px';
+      canvas.style.height = H + 'px';             // 지금까지 본 최대 innerHeight (주소창 변화 대응)
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function spawnAll() {
+      particles = Array.from({ length: targetCount() }, () => new Particle(W, H, true));
     }
 
-    function loop(now) {
-      if (running) {
-        ctx.clearRect(0, 0, W, H);
-        for (let i = 0; i < petals.length; i++) {
-          petals[i].step(now);
-          petals[i].draw();
-        }
-        // 5초 후 fps 측정 → 50fps 미만 시 count 절반
-        frameCount++;
-        if (!measureStart) measureStart = now;
-        if (now - measureStart > 5000 && frameCount > 0) {
-          const fps = (frameCount / (now - measureStart)) * 1000;
-          if (fps < 50 && count > 12) {
-            count = 12;
-            spawn();
-          }
-          measureStart = 0;
-          frameCount = 0;
-        }
+    // --- FPS 측정 (로드 후 5s 창, 강등은 되돌리지 않음) ---
+    let fpsStart = 0, fpsFrames = 0, fpsDone = false, fpsPrev = 0;
+    function measureFps(now) {
+      if (fpsDone) return;
+      // 한 프레임 간격이 250ms 를 넘으면 기기 성능이 아니라 브라우저 스로틀링(백그라운드/가려진 창)으로 보고 창을 다시 시작
+      const gap = fpsPrev ? now - fpsPrev : 0;
+      fpsPrev = now;
+      if (gap > 250) { fpsStart = 0; }
+      if (!fpsStart) { fpsStart = now; fpsFrames = 0; return; }
+      fpsFrames++;
+      const elapsed = now - fpsStart;
+      if (elapsed < 5000) return;
+      const fps = (fpsFrames * 1000) / elapsed;
+      fpsStart = 0;
+      // 기준을 명세(50/40fps)보다 낮춤: iOS 저전력 모드 등 30fps 로 고정되는 정상 기기에서
+      // 꽃잎이 꺼지지 않게 하기 위함. 30fps 고정 기기는 그대로 유지, 실제로 느린 기기만 강등.
+      if (degrade === 0 && fps < 28) {
+        degrade = 1;                                 // count ×0.6 (최소 8) + DPR 1, 재측정
+        sizeCanvas();
+        particles.length = Math.min(particles.length, targetCount());
+      } else if (degrade === 1 && fps < 18) {
+        disable();                                   // canvas OFF + 정적 장식
+      } else {
+        fpsDone = true;
       }
+    }
+    function disable() {
+      degrade = 2;
+      fpsDone = true;
+      stop();
+      canvas.style.display = 'none';
+      if (staticDeco) staticDeco.classList.add('is-forced');
+    }
+
+    // --- 루프 (dt 기반, 최대 50ms 클램프) ---
+    let rafId = 0, last = 0, running = false;
+    const pausedBy = new Set();
+    function loop(nowMs) {
+      const dt = Math.min(0.05, (nowMs - (last || nowMs)) / 1000);
+      last = nowMs;
+      simT += dt;
+      updateWind(simT);
+      ctx.clearRect(0, 0, W, H);
+      for (let i = 0; i < particles.length; i++) { particles[i].step(dt, W, H); particles[i].draw(); }
+      measureFps(nowMs);
+      if (running) rafId = requestAnimationFrame(loop);
+    }
+    function start() {
+      if (running || degrade >= 2 || pausedBy.size) return;
+      running = true;
+      last = 0;
+      fpsStart = 0; fpsPrev = 0;                     // FPS 측정 창 리셋
       rafId = requestAnimationFrame(loop);
     }
+    function stop() {
+      running = false;
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+    petalsAPI.pause  = (reason) => { pausedBy.add(reason); stop(); };
+    petalsAPI.resume = (reason) => { pausedBy.delete(reason); start(); };
 
-    resize();
-    spawn();
-    rafId = requestAnimationFrame(loop);
-    window.addEventListener('resize', resize, { passive: true });
+    // --- resize: 폭이 바뀐 경우에만 재할당 (150ms debounce) ---
+    let resizeTimer = 0;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (degrade >= 2) return;
+        const w = window.innerWidth, h = window.innerHeight;
+        if (w !== W) {
+          W = w; maxH = h; H = maxH;
+          sizeCanvas();
+          spawnAll();
+        } else if (h > maxH) {                       // 더 큰 높이만 반영 (파티클 유지)
+          maxH = h; H = maxH;
+          sizeCanvas();
+        }
+      }, 150);
+    }, { passive: true });
 
-    // 페이지가 가려지면 일시정지 (배터리/CPU 절약)
+    // --- 탭 비활성 시 정지 ---
     document.addEventListener('visibilitychange', () => {
-      running = document.visibilityState !== 'hidden';
+      if (document.visibilityState === 'hidden') petalsAPI.pause('hidden');
+      else petalsAPI.resume('hidden');
     });
+
+    W = window.innerWidth;
+    maxH = H = window.innerHeight;
+    sizeCanvas();
+    spawnAll();
+    if (document.visibilityState === 'hidden') pausedBy.add('hidden');
+    start();
   }
 
   // ---------------------------------------------------------
@@ -206,7 +411,7 @@
       ddayNum.dataset.target = String(diff);
       ddayNum.textContent = isReduced() ? String(diff) : '0';
     } else if (diff === 0) {
-      ddayBlock.innerHTML = '<span class="script" style="font-size:24px;color:var(--color-primary)">오늘</span><br><span style="font-size:14px;color:var(--color-muted)">저희 두 사람의 약속이 시작됩니다</span>';
+      ddayBlock.innerHTML = '<span class="script" style="font-size:24px;color:var(--color-accent)">오늘</span><br><span style="font-size:14px;color:var(--color-muted)">저희 두 사람의 약속이 시작됩니다</span>';
       if (ddayLabel) ddayLabel.style.display = 'none';
     } else {
       ddayNum.dataset.target = String(-diff);
@@ -220,7 +425,7 @@
       const onIntersect = (entries, obs) => {
         entries.forEach(e => {
           if (!e.isIntersecting) return;
-          countUp(ddayNum, parseInt(ddayNum.dataset.target, 10), 1400);
+          countUp(ddayNum, parseInt(ddayNum.dataset.target, 10), 1200);
           obs.disconnect();
         });
       };
@@ -231,11 +436,21 @@
 
   function countUp(el, target, dur) {
     const start = performance.now();
+    const live = el.closest('[aria-live]');
+    if (live) live.setAttribute('aria-busy', 'true');  // 카운트 중간 값은 스크린리더에 읽히지 않게
     function tick(now) {
       const t = clamp((now - start) / dur, 0, 1);
       const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
       el.textContent = Math.round(target * eased);
-      if (t < 1) requestAnimationFrame(tick);
+      if (t < 1) { requestAnimationFrame(tick); return; }
+      if (live) live.setAttribute('aria-busy', 'false');
+      // (Nice) 카운트업 종료 직후 flip 1회 — 400ms --ease-emphasized
+      if (el.animate && !isReduced()) {
+        el.animate([
+          { transform: 'perspective(400px) rotateX(70deg)', opacity: 0.4 },
+          { transform: 'perspective(400px) rotateX(0deg)',  opacity: 1 }
+        ], { duration: 400, easing: 'cubic-bezier(0.2, 0, 0, 1)' });
+      }
     }
     requestAnimationFrame(tick);
   }
@@ -249,10 +464,16 @@
     const track = $('#gallery-track');
     if (!stage || !track) return;
     const slides = $$('.gallery-slide', track);
+    const N = slides.length;
+    // 점 인디케이터·카운터는 DOM 의 슬라이드 수 기준으로 생성
+    const dotsWrap = $('#gallery-dots');
+    if (dotsWrap) dotsWrap.innerHTML = '<li></li>'.repeat(N);
     const dots   = $$('#gallery-dots li');
+    const curEl  = $('#gallery-cur');
+    const totEl  = $('#gallery-total');
+    if (totEl) totEl.textContent = String(N);
     const prev   = $('.gallery-prev');
     const next   = $('.gallery-next');
-    const N = slides.length;
     let idx = 0;
     let auto = null;
     let dragX = 0;
@@ -266,6 +487,7 @@
       track.style.transition = withTransition ? '' : 'none';
       track.style.transform = `translateX(-${idx * 100}%)`;
       dots.forEach((d, k) => d.classList.toggle('active', k === idx));
+      if (curEl) curEl.textContent = String(idx + 1);
       slides.forEach((s, k) => {
         s.setAttribute('aria-hidden', k === idx ? 'false' : 'true');
       });
@@ -360,6 +582,7 @@
     let panStart = null;
     let prevFocus = null;
     let currentIdx = 0;
+    let single = false;   // true: 약도 등 단독 이미지 (갤러리 순번·좌우 이동과 분리)
 
     function setTransform() {
       img.style.transform = `translate(${originX}px, ${originY}px) scale(${scale})`;
@@ -370,24 +593,45 @@
     }
 
     function open(i) {
+      single = false;
       currentIdx = i;
-      img.src = slides[i].src;
-      img.alt = slides[i].alt || '';
+      show(slides[i].src, slides[i].alt, '사진 확대 보기');
+    }
+    function openSingle(src, alt, label) {
+      single = true;
+      show(src, alt, label || '이미지 확대 보기');
+    }
+    function show(src, alt, label) {
+      reset();
+      img.src = src;
+      img.alt = alt || '';
+      lb.setAttribute('aria-label', label);
       lb.hidden = false;
       requestAnimationFrame(() => lb.classList.add('is-open'));
       document.body.style.overflow = 'hidden';
       prevFocus = document.activeElement;
       close.focus();
-      haptic(15);
+      haptic(25);
+      petalsAPI.pause('lightbox');                  // §1-A-5: 모달 뒤 캔버스 연산 정지
     }
     function closeFn() {
+      if (lb.hidden) return;
       lb.classList.remove('is-open');
+      haptic(15);
       setTimeout(() => {
         lb.hidden = true;
         reset();
         document.body.style.overflow = '';
         if (prevFocus && prevFocus.focus) prevFocus.focus();
+        petalsAPI.resume('lightbox');
       }, isReduced() ? 0 : 220);
+    }
+    function showIdx(i) {
+      currentIdx = i;
+      img.src = slides[currentIdx].src;
+      img.alt = slides[currentIdx].alt || '';
+      reset();
+      galleryAPI.show(currentIdx);
     }
 
     close.addEventListener('click', closeFn);
@@ -395,17 +639,14 @@
     document.addEventListener('keydown', (e) => {
       if (lb.hidden) return;
       if (e.key === 'Escape') closeFn();
-      if (e.key === 'ArrowLeft' && galleryAPI) {
-        currentIdx = (currentIdx - 1 + galleryAPI.count) % galleryAPI.count;
-        img.src = slides[currentIdx].src; reset();
-        galleryAPI.show(currentIdx);
-      }
-      if (e.key === 'ArrowRight' && galleryAPI) {
-        currentIdx = (currentIdx + 1) % galleryAPI.count;
-        img.src = slides[currentIdx].src; reset();
-        galleryAPI.show(currentIdx);
-      }
+      if (e.key === 'Tab') { e.preventDefault(); close.focus(); }   // 포커스 트랩 (모달 내 포커스 가능 요소는 닫기 버튼 1개)
+      if (single) return;
+      if (e.key === 'ArrowLeft' && galleryAPI) showIdx((currentIdx - 1 + galleryAPI.count) % galleryAPI.count);
+      if (e.key === 'ArrowRight' && galleryAPI) showIdx((currentIdx + 1) % galleryAPI.count);
     });
+
+    // 위→아래 swipe 100px 로 닫기 (확대하지 않은 상태에서만)
+    let swipeStartY = null, swipeDY = 0;
 
     // Pinch / double-tap zoom
     img.addEventListener('touchstart', (e) => {
@@ -415,8 +656,11 @@
         lastDist = Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
       } else if (e.touches.length === 1) {
         const now = Date.now();
+        swipeStartY = scale <= 1.05 ? e.touches[0].clientY : null;
+        swipeDY = 0;
         if (now - lastTap < 300) {
-          scale = scale > 1.05 ? 1 : 2.4;
+          swipeStartY = null;
+          scale = scale > 1.05 ? 1 : 2.5;
           originX = 0; originY = 0;
           lb.classList.remove('is-zooming'); // smooth transition
           setTransform();
@@ -443,11 +687,21 @@
         originX = e.touches[0].clientX - panStart.x;
         originY = e.touches[0].clientY - panStart.y;
         setTransform();
+      } else if (e.touches.length === 1 && swipeStartY !== null) {
+        swipeDY = Math.max(0, e.touches[0].clientY - swipeStartY);
+        img.style.transform = `translateY(${swipeDY}px)`;
       }
     }, { passive: true });
 
     img.addEventListener('touchend', (e) => {
       if (e.touches.length === 0) {
+        if (swipeStartY !== null && swipeDY > 100) {
+          swipeStartY = null; swipeDY = 0;
+          lb.classList.remove('is-zooming');
+          closeFn();
+          return;
+        }
+        swipeStartY = null; swipeDY = 0;
         lastDist = 0;
         panStart = null;
         if (scale < 1.05) reset();
@@ -455,8 +709,19 @@
       }
     });
 
-    lightboxAPI = { open };
+    lightboxAPI = { open, openSingle };
     window.openLightbox = open; // 갤러리에서 호출
+
+    // 약도: 탭/Enter/Space → 단독 lightbox (핀치 줌·더블탭은 위 로직 공유)
+    const mapCard = $('#venue-map');
+    const mapImg = mapCard && $('img', mapCard);
+    if (mapCard && mapImg) {
+      const openMap = () => openSingle(mapImg.currentSrc || mapImg.src, mapImg.alt, '약도 확대 보기');
+      mapCard.addEventListener('click', openMap);
+      mapCard.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); openMap(); }
+      });
+    }
   }
 
   // local helper bridge
@@ -467,32 +732,48 @@
   // ---------------------------------------------------------
   // 7. Copy account number + toast (motion §3-3)
   // ---------------------------------------------------------
+  async function copyText(txt) {
+    try {
+      await navigator.clipboard.writeText(txt);
+      return true;
+    } catch (e) {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = txt;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        return ok;
+      } catch (e2) { return false; }
+    }
+  }
+
   function setupCopy() {
     $$('.copy-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
-        const txt = btn.dataset.copy || '';
-        let ok = false;
-        try {
-          await navigator.clipboard.writeText(txt);
-          ok = true;
-        } catch (e) {
-          try {
-            const ta = document.createElement('textarea');
-            ta.value = txt;
-            ta.setAttribute('readonly', '');
-            ta.style.position = 'fixed';
-            ta.style.left = '-9999px';
-            document.body.appendChild(ta);
-            ta.select();
-            ok = document.execCommand('copy');
-            document.body.removeChild(ta);
-          } catch (e2) { ok = false; }
-        }
-        if (ok) {
+        // 은행 앱 입력란에 바로 붙여넣도록 숫자만 복사
+        const txt = (btn.dataset.copy || '').replace(/\D/g, '');
+        if (await copyText(txt)) {
           btn.classList.add('is-copied');
           haptic(15);
           showToast('계좌번호가 복사되었습니다');
           setTimeout(() => btn.classList.remove('is-copied'), 1400);
+        } else {
+          showToast('복사에 실패했습니다. 직접 선택해주세요');
+        }
+      });
+    });
+
+    // 주소 복사: 텍스트 그대로 복사 (숫자 필터 적용하지 않음)
+    $$('[data-copy-text]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (await copyText(btn.dataset.copyText || '')) {
+          haptic(15);
+          showToast('주소가 복사되었습니다');
         } else {
           showToast('복사에 실패했습니다. 직접 선택해주세요');
         }
@@ -514,7 +795,7 @@
     toastTimer = setTimeout(() => {
       t.classList.remove('is-visible');
       setTimeout(() => { t.hidden = true; }, 320);
-    }, 1700);
+    }, 1500);
   }
 
   // ---------------------------------------------------------
@@ -526,16 +807,36 @@
     if (!btn || !audio) return;
     audio.volume = 0;
 
+    let fadeToken = 0;                               // 새 페이드가 시작되면 이전 페이드는 무효
     function fadeVolume(target, dur) {
+      const token = ++fadeToken;
       const start = audio.volume;
       const t0 = performance.now();
       function tick(now) {
+        if (token !== fadeToken) return;
         const t = clamp((now - t0) / dur, 0, 1);
-        audio.volume = start + (target - start) * t;
+        audio.volume = start + (target - start) * t;  // iOS 는 volume 이 읽기 전용이라 무시됨(재생/정지는 정상)
         if (t < 1) requestAnimationFrame(tick);
         else if (target === 0) audio.pause();
       }
       requestAnimationFrame(tick);
+    }
+
+    let wantPlaying = false;                         // 지금 재생 중이어야 하는 상태인가
+    let userPaused = false;                          // 사용자가 직접 끈 뒤에는 자동으로 다시 켜지 않음
+    function setState(on) {
+      wantPlaying = on;
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      btn.setAttribute('aria-label', on ? '배경음악 일시정지' : '배경음악 재생');
+    }
+    async function playMusic() {
+      await audio.play();                            // 자동재생이 막혀 있으면 여기서 reject
+      setState(true);
+      fadeVolume(0.4, 1500);
+    }
+    function pauseMusic() {
+      setState(false);
+      fadeVolume(0, 600);
     }
 
     btn.addEventListener('click', async () => {
@@ -543,17 +844,43 @@
       void btn.offsetWidth;
       btn.classList.add('is-rippling');
       haptic(10);
+      removeUnlock();
       try {
-        if (audio.paused) {
-          await audio.play();
-          btn.setAttribute('aria-pressed', 'true');
-          fadeVolume(0.4, 1500);
+        if (!wantPlaying) {
+          userPaused = false;
+          await playMusic();
         } else {
-          fadeVolume(0, 600);
-          btn.setAttribute('aria-pressed', 'false');
+          userPaused = true;
+          pauseMusic();
         }
       } catch (e) {
-        showToast('음원 파일을 찾을 수 없어요. (audio/bgm.mp3)');
+        showToast('음악을 재생할 수 없어요');
+      }
+    });
+
+    // --- 자동 재생 ---
+    // 브라우저는 사용자의 터치 전에는 소리 재생을 막는다(특히 iOS Safari, Android Chrome).
+    // 1) 페이지가 열리면 바로 재생을 시도하고, 2) 막히면 화면을 처음 터치하는 순간 시작한다.
+    const UNLOCK_EVENTS = ['pointerdown', 'touchend', 'click', 'keydown'];
+    function removeUnlock() {
+      UNLOCK_EVENTS.forEach((t) => document.removeEventListener(t, unlock, true));
+    }
+    function unlock(e) {
+      if (userPaused || wantPlaying) { removeUnlock(); return; }
+      if (e.target && btn.contains(e.target)) return;   // 음악 버튼은 자체 핸들러가 처리
+      playMusic().then(removeUnlock).catch(() => {});   // 실패하면 다음 터치에서 다시 시도
+    }
+    playMusic().catch(() => {
+      UNLOCK_EVENTS.forEach((t) => document.addEventListener(t, unlock, { capture: true, passive: true }));
+    });
+
+    // 다른 앱·탭으로 나가면 멈추고, 돌아오면 이어서 재생
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        fadeToken++;
+        audio.pause();
+      } else if (wantPlaying && !userPaused) {
+        audio.play().then(() => fadeVolume(0.4, 600)).catch(() => {});
       }
     });
   }
@@ -608,22 +935,10 @@
   }
 
   // ---------------------------------------------------------
-  // 11. RSVP / Guestbook placeholder URL handling
+  // 11. Guestbook placeholder URL handling
   // ---------------------------------------------------------
   function setupExternalLinks() {
-    const rsvp = $('#rsvp-link');
-    const gb   = $('#guestbook-link');
-    if (rsvp) {
-      if (RSVP_FORM_URL) {
-        rsvp.href = RSVP_FORM_URL;
-        rsvp.removeAttribute('data-placeholder-url');
-      } else {
-        rsvp.addEventListener('click', (e) => {
-          e.preventDefault();
-          showToast('참석 의사 폼은 준비 중입니다');
-        });
-      }
-    }
+    const gb = $('#guestbook-link');
     if (gb) {
       if (GUESTBOOK_URL) {
         gb.href = GUESTBOOK_URL;
@@ -638,12 +953,28 @@
   }
 
   // ---------------------------------------------------------
+  // 12. 코너·디바이더 개나리 가지 살랑임 (motion §3-12, Nice)
+  //     viewport 안에서만 animation-play-state: running, 위상은 요소마다 랜덤
+  // ---------------------------------------------------------
+  function setupBranchSway() {
+    if (isReduced()) return;
+    const els = $$('.corner-deco, .divider');
+    if (!els.length || !('IntersectionObserver' in window)) return;
+    els.forEach(el => { el.style.animationDelay = `-${(Math.random() * 6).toFixed(2)}s`; });
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => e.target.classList.toggle('is-swaying', e.isIntersecting));
+    }, { threshold: 0 });
+    els.forEach(el => io.observe(el));
+  }
+
+  // ---------------------------------------------------------
   // INIT
   // ---------------------------------------------------------
   function init() {
     setupHero();
     setupReveal();
     setupPetals();
+    setupBranchSway();
     setupCalendar();
     setupGallery();
     setupLightbox();

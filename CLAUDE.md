@@ -2,7 +2,7 @@
 
 ## 하네스: 한국 모바일 웨딩 청첩장 제작
 
-**목표:** 2025-2026 트렌드를 반영한 한국 모바일 단일 페이지 청첩장(index.html + images/)을 컨셉부터 QA까지 일관되게 제작한다. 이미지는 gpt-image2(글로벌 스킬)로 생성한다.
+**목표:** 2025-2026 트렌드를 반영한 한국 모바일 단일 페이지 청첩장(index.html + images/)을 컨셉부터 QA까지 일관되게 제작한다. 이미지는 프로젝트 스킬 gpt-image2(`.claude/skills/gpt-image2/`, 기본 모델 `gpt-image-2.6-sunburst`, 키는 루트 `.env`의 `OPENAI_API_KEY`)로 생성한다.
 
 **트리거:** 청첩장 제작·수정·재실행 관련 모든 요청에 `wedding-invitation` 스킬을 사용하라. 단순 질문(예: "어떤 폰트가 좋아?")은 직접 응답 가능하지만, 산출물 생성/수정이 동반되면 반드시 오케스트레이터를 통해 진행한다.
 
@@ -24,3 +24,4 @@
 |------|----------|------|------|
 | 2026-04-29 | 초기 구성 | 전체 (5 agents + 6 skills + CLAUDE.md) | 신규 하네스 구축 |
 | 2026-04-29 | motion-designer 에이전트 + wedding-motion-design 스킬 추가, frontend/QA 모션 통합 | agents/motion-designer.md, skills/wedding-motion-design, skills/wedding-mobile-frontend, skills/wedding-invitation-qa, skills/wedding-invitation, agents/frontend-developer.md, agents/invitation-qa.md | 사용자 요청: 인터랙티브 요소 + 애니메이션 배경 추가 |
+| 2026-11-21 | 글로벌 gpt-image2 스킬을 프로젝트 내장 스킬로 대체(모델 gpt-image-2.6-sunburst), 이미지 저장 경로를 프로젝트 상대 경로 `images/`로 수정 | skills/gpt-image2 (신규), skills/wedding-imagery-gpt-image2, skills/wedding-invitation, agents/image-artist.md, .env.example | 원작자 PC 전용 스킬·경로(/Users/robin/...) 의존 제거 |
