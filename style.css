@@ -16,11 +16,11 @@
   --color-muted:     #76664A;   /* warm olive taupe */
 
   /* === Typography === */
-  /* 한글은 Pretendard 하나로 통일 (2026-11-22). 영문 장식 글꼴 뒤에도 Pretendard 를 두어
-     영문 클래스 안의 한글이 명조(시스템 serif)로 떨어지지 않게 함 */
-  --font-ko:         "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-  --font-en-serif:   "Cormorant Garamond", "Times New Roman", "Pretendard", serif;
-  --font-script:     "Allura", "Pretendard", cursive;
+  /* 한글은 고운바탕(Gowun Batang) 하나로 통일 (2026-11-22, 사용자 선택). 굵기는 400/700 두 가지만 사용.
+     영문 장식 글꼴 뒤에도 Gowun Batang 을 두어 영문 클래스 안의 한글도 같은 글꼴로 표시 */
+  --font-ko:         "Gowun Batang", "Nanum Myeongjo", "Apple SD Gothic Neo", "Malgun Gothic", serif;
+  --font-en-serif:   "Cormorant Garamond", "Times New Roman", "Gowun Batang", serif;
+  --font-script:     "Allura", "Gowun Batang", cursive;
 
   /* === Layout === */
   --max-w: 480px;
@@ -174,7 +174,7 @@ body::before { z-index: 0; }
 
 .section-title {
   font-family: var(--font-ko);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 22px;
   letter-spacing: 0.02em;
   color: var(--color-text);
@@ -208,7 +208,7 @@ body::before { z-index: 0; }
 
 .script { font-family: var(--font-script); }
 .en { font-family: var(--font-en-serif); }
-.muted { color: var(--color-muted); font-size: 13px; }
+.muted { color: var(--color-muted); font-size: 13.5px; }
 
 /* === Reveal (motion §2) === */
 .reveal {
@@ -331,7 +331,7 @@ body::before { z-index: 0; }
 }
 .hero-name-ko {
   font-family: var(--font-ko);
-  font-size: 30px;
+  font-size: 32px;
   font-weight: 700;
   color: var(--color-text);
   letter-spacing: 0.04em;
@@ -346,7 +346,7 @@ body::before { z-index: 0; }
 .hero-info {
   font-family: var(--font-ko);
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--color-muted);
   letter-spacing: 0.01em;
   line-height: 1.9;
@@ -427,7 +427,7 @@ body::before { z-index: 0; }
 .greeting-body {
   margin: 24px auto 32px;
   max-width: 320px;
-  font-size: 15.5px;
+  font-size: 16px;
   line-height: 2.0;
   color: var(--color-text);
 }
@@ -484,18 +484,18 @@ body::before { z-index: 0; }
 }
 .couple-card .parents span {
   color: var(--color-text);
-  font-weight: 500;
+  font-weight: 700;
 }
 .couple-name {
   font-family: var(--font-ko);
   font-size: 22px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-accent);
   letter-spacing: 0.04em;
   margin-bottom: 4px;
 }
 .couple-bio {
-  font-size: 13px;
+  font-size: 13.5px;
   color: var(--color-muted);
   margin-top: 8px;
   letter-spacing: 0.02em;
@@ -546,9 +546,9 @@ body::before { z-index: 0; }
 }
 
 .date-headline {
-  font-family: var(--font-ko);   /* 한글+숫자 정보 문구 → Pretendard */
+  font-family: var(--font-ko);   /* 한글+숫자 정보 문구 → Gowun Batang */
   font-size: 19px;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--color-text);
   letter-spacing: 0.01em;
   margin-bottom: 32px;
@@ -580,6 +580,7 @@ body::before { z-index: 0; }
   font-weight: 400;
   line-height: 1.5;
 }
+.cal td { font-family: var(--font-ko); }   /* 날짜 숫자 → Gowun Batang (caption·요일은 Cormorant 유지) */
 .cal th {
   color: var(--color-muted);
   font-size: 13px;
@@ -594,7 +595,7 @@ body::before { z-index: 0; }
 .cal td.today {
   position: relative;
   color: var(--color-text);    /* 노랑 원 위 #3B3022 (대비 ≈ 8:1) */
-  font-weight: 600;
+  font-weight: 700;
 }
 .cal td.today::before {
   content: '';
@@ -634,9 +635,9 @@ body::before { z-index: 0; }
   margin-top: 20px;
 }
 .dday-label {
-  font-size: 14px;
+  font-size: 14.5px;
   color: var(--color-muted);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
   margin-bottom: 8px;
 }
 .dday {
@@ -648,7 +649,7 @@ body::before { z-index: 0; }
 }
 .dday-sub {
   font-family: var(--font-ko);
-  font-size: 14px;
+  font-size: 14.5px;
   color: var(--color-muted);
   margin-top: 12px;
   line-height: 1.7;
@@ -658,7 +659,7 @@ body::before { z-index: 0; }
    5. GALLERY
    ========================================================== */
 .gallery-message {
-  font-size: 14.5px;
+  font-size: 15px;
   color: var(--color-muted);
   margin-bottom: 32px;
 }
@@ -767,15 +768,15 @@ body::before { z-index: 0; }
 
 .gallery-counter {
   font-family: var(--font-ko);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--color-muted);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
 }
 
 .gallery-hint {
-  font-size: 13.5px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   color: var(--color-text);
   margin-top: 14px;
   letter-spacing: 0;
@@ -786,7 +787,7 @@ body::before { z-index: 0; }
    ========================================================== */
 .venue-name {
   font-family: var(--font-ko);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 18px;
   color: var(--color-text);
   letter-spacing: 0.01em;
@@ -794,7 +795,7 @@ body::before { z-index: 0; }
 }
 .venue-hall {
   font-family: var(--font-ko);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 15px;
   color: var(--color-accent);
   letter-spacing: 0.01em;
@@ -802,14 +803,14 @@ body::before { z-index: 0; }
 }
 .venue-addr {
   font-family: var(--font-ko);
-  font-size: 14px;
+  font-size: 14.5px;
   color: var(--color-text);
   margin-top: 6px;
   letter-spacing: 0.02em;
 }
 .venue-addr-sub {
   font-family: var(--font-ko);
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--color-muted);
   margin: 2px 0 22px;
   letter-spacing: 0.02em;
@@ -839,8 +840,8 @@ body::before { z-index: 0; }
   height: auto;
 }
 .venue-map-hint {
-  font-size: 13.5px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   color: var(--color-text);
   margin-top: 10px;
   letter-spacing: 0;
@@ -895,11 +896,12 @@ body::before { z-index: 0; }
 .directions p,
 .directions dd {
   font-family: var(--font-ko);
-  font-size: 14px;
+  font-size: 14.5px;
   color: var(--color-text);
   line-height: 1.7;
   word-break: keep-all;
   overflow-wrap: anywhere;
+  text-wrap: pretty;           /* 마지막 줄에 "하차" 한 단어만 남는 줄바꿈 방지 */
 }
 /* 버스 노선: 출발지(굵게) → 노선 태그 → 하차 안내(본문) */
 .route-list {
@@ -953,7 +955,7 @@ body::before { z-index: 0; }
    ========================================================== */
 .account { position: relative; }
 .account-message {
-  font-size: 14.5px;
+  font-size: 15px;
   color: var(--color-text);
   margin-bottom: 32px;
   line-height: 2.0;
@@ -978,7 +980,7 @@ body::before { z-index: 0; }
   gap: 8px;
   padding: 16px 44px 16px 20px;
   font-family: var(--font-ko);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 14.5px;
   line-height: 1.5;
   color: var(--color-accent);
@@ -1037,14 +1039,14 @@ body::before { z-index: 0; }
 
 .acc-name {
   font-family: var(--font-ko);
-  font-size: 13.5px;
+  font-size: 14px;
   color: var(--color-text);
-  font-weight: 600;
+  font-weight: 700;
   flex: 1 0 100%;
 }
 .acc-num {
   font-family: var(--font-ko);
-  font-size: 12.5px;
+  font-size: 13.5px;
   color: var(--color-muted);
   letter-spacing: 0.02em;
   flex: 1 1 auto;
@@ -1060,8 +1062,9 @@ body::before { z-index: 0; }
   background: var(--color-bg);
   color: var(--color-accent);
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 13px;
   font-family: var(--font-ko);
+  font-weight: 700;
   letter-spacing: 0.02em;
   transition:
     transform var(--dur-fast) var(--ease-standard),
@@ -1101,7 +1104,7 @@ body::before { z-index: 0; }
    ========================================================== */
 .guestbook-message,
 .share-message {
-  font-size: 14.5px;
+  font-size: 15px;
   color: var(--color-text);
   line-height: 2.0;
   margin-bottom: 28px;
@@ -1158,7 +1161,7 @@ body::before { z-index: 0; }
   flex: 1 1 auto;
   min-height: 0;
   font-family: var(--font-ko);
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--color-accent);
   line-height: 1.5;
 }
@@ -1167,7 +1170,7 @@ body::before { z-index: 0; }
   flex: 0 0 auto;
   margin-left: auto;
   font-family: var(--font-ko);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--color-muted);
   letter-spacing: 0.02em;
 }
@@ -1177,7 +1180,7 @@ body::before { z-index: 0; }
 .gb-board { margin-top: 28px; text-align: center; }
 .gb-status {
   font-family: var(--font-ko);
-  font-size: 13.5px;
+  font-size: 14px;
   color: var(--color-muted);
   line-height: 1.8;
 }
@@ -1208,21 +1211,21 @@ body::before { z-index: 0; }
   flex: 1 1 auto;
   min-width: 0;
   font-family: var(--font-ko);
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 700;
+  font-size: 14.5px;
   color: var(--color-text);
   overflow-wrap: anywhere;
 }
 .gb-item-date {
   flex: 0 0 auto;
   font-family: var(--font-ko);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--color-muted);
   letter-spacing: 0.02em;
 }
 .gb-item-msg {
   font-family: var(--font-ko);
-  font-size: 14px;
+  font-size: 14.5px;
   line-height: 1.75;
   color: var(--color-text);
   white-space: pre-wrap;
@@ -1257,16 +1260,16 @@ body::before { z-index: 0; }
   line-height: 1;
 }
 .footer-line {
-  font-size: 12px;
+  font-size: 13px;
   letter-spacing: 0.18em;
   color: var(--color-muted);
   margin-top: 4px;
 }
 .footer-line.en {
-  font-family: var(--font-ko);   /* 내용이 한글 이름("주완 & 윤경") → Pretendard, 기울임 제거 */
+  font-family: var(--font-ko);   /* 내용이 한글 이름("주완 & 윤경") → Gowun Batang, 기울임 제거 */
   font-style: normal;
-  font-weight: 500;
-  font-size: 13px;
+  font-weight: 700;
+  font-size: 14px;
   letter-spacing: 0.04em;
   margin-top: 8px;
   color: var(--color-text);
@@ -1283,8 +1286,9 @@ body::before { z-index: 0; }
   background: transparent;
   color: var(--color-text);
   font-family: var(--font-ko);
-  font-size: 13.5px;
-  letter-spacing: 0.04em;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   border-radius: 999px;
   text-decoration: none;
   transition:
@@ -1319,7 +1323,7 @@ body::before { z-index: 0; }
   padding: 12px 20px;
   border-radius: 12px;
   font-family: var(--font-ko);
-  font-size: 13px;
+  font-size: 13.5px;
   letter-spacing: 0.02em;
   box-shadow: 0 6px 24px rgba(59, 48, 34, 0.18);
   z-index: 999;
@@ -1464,7 +1468,7 @@ body::before { z-index: 0; }
 
 @media (min-width: 768px) {
   .card { box-shadow: 0 0 80px rgba(59, 48, 34, 0.18); }
-  .hero-name-ko { font-size: 32px; }
+  .hero-name-ko { font-size: 34px; }
 }
 
 /* ==========================================================

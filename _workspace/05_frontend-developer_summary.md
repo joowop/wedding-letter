@@ -176,3 +176,12 @@
 - **검증**: 한글 포함 텍스트 요소 110개 computed font-family 전수 검사 → Pretendard 아닌 요소 0, input/textarea/button 전부 Pretendard, Myeongjo FontFace 0. 375·320px `scrollWidth` = 화면 폭. 320px 에서 계좌 행은 6개 모두 "복사" 버튼이 번호 아래 줄 오른쪽으로 일관되게 내려감(테두리 추가로 내부 폭 감소, 깨짐 없음).
 
 > 2026-11-22 추가(오케스트레이터 직접 수정): 계좌 아코디언(`.acc-group`)의 진한 테두리·버터색 배경·16px 굵은 글씨가 과하다는 사용자 피드백으로, 이전 디자인(surface 배경, 14.5px, 얇은 화살표)으로 되돌리고 테두리만 아주 연하게(`1px rgba(95,107,44,.22)`) 남겼다. 아이콘은 20px 로 유지.
+
+## 2026-11-22 한글 글꼴을 Gowun Batang 으로 교체
+
+- **글꼴**: 사용자가 글꼴 비교 화면에서 고운바탕(Gowun Batang)을 선택. `:root` `--font-ko` "Pretendard", -apple-system, ... sans-serif → "Gowun Batang", "Nanum Myeongjo", "Apple SD Gothic Neo", "Malgun Gothic", serif. `--font-en-serif`·`--font-script` 의 한글 대체 글꼴 "Pretendard" → "Gowun Batang". index.html Google Fonts 링크에 `Gowun+Batang:wght@400;700` 추가(Allura·Cormorant 유지), Pretendard jsdelivr `<link>` 제거. 달력 날짜 숫자(`.cal td`)도 Gowun Batang(caption·요일은 Cormorant 유지). script.js D-day 당일 문구 두 span 에 `font-family:var(--font-ko)` 명시.
+- **굵기(400/700 만)**: 600/500 → 700: `.section-title`, `.couple-name`, `.couple-card .parents span`, `.date-headline`, `.cal td.today`, `.gallery-hint`, `.venue-name`, `.venue-hall`, `.venue-map-hint`, `.acc-group summary`, `.acc-name`, `.gb-item-name`, `.footer-line.en`, script.js "오늘". 새로 700 지정: `.btn`, `.copy-btn`. 500 → 400: `.hero-info`.
+- **크기(명조 보정)**: `.hero-name-ko` 30→32px(768px 이상 32→34), `.greeting-body` 15.5→16, `.muted` 13→13.5, `.couple-bio` 13→13.5, `.dday-label` 14→14.5(자간 .05→.02em), `.dday-sub` 14→14.5, `.gallery-message` 14.5→15, `.gallery-counter` 12→13(자간 .08→.04em), `.gallery-hint`·`.venue-map-hint` 13.5→14, `.venue-addr` 14→14.5, `.venue-addr-sub` 12.5→13, `.directions p/dd` 14→14.5, `.account-message`·`.guestbook-message`·`.share-message` 14.5→15, `.acc-name` 13.5→14, `.acc-num` 12.5→13.5, `.copy-btn` 12→13, `.gb-error` 12.5→13, `.gb-count` 12→13, `.gb-status` 13.5→14, `.gb-item-name` 14→14.5, `.gb-item-date` 12→13, `.gb-item-msg` 14→14.5, `.footer-line` 12→13, `.footer-line.en` 13→14, `.btn` 13.5→14(자간 .04→.02em), `.toast` 13→13.5.
+- **줄바꿈**: `.directions p/dd` 에 `text-wrap: pretty` 추가 — 버스 안내 마지막 줄에 "하차" 한 단어만 남던 현상 방지("경인일보 하차" 가 함께 내려감).
+- **캐시**: `style.css?v=20261122c`, `script.js?v=20261122c`.
+- **검증**: 한글 포함 텍스트 요소 112개 computed font-family 전수 검사 → Gowun Batang 아닌 요소 0, font-weight 400(49)/700(63) 외 0. `document.fonts.check('700 16px "Gowun Batang"','서주완')` true(400 도 true). Pretendard `<link>` 0. 375·320px `scrollWidth` = 화면 폭. 320px 계좌 행은 이전과 같이 "복사" 버튼이 번호 아래 줄 오른쪽으로 내려감(이전 12.5px 에서도 폭 부족으로 동일).
