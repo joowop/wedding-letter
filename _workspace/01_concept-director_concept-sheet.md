@@ -77,8 +77,8 @@ sections_order:
   - couple-intro        # 신랑신부 소개 + 부모 함자
   - calendar            # 캘린더 + D-day 카운트다운
   - gallery             # 갤러리 (5장 스와이프 + lightbox 핀치줌)
-  - venue               # 오시는 길 (지도 + 주소 + 교통편)
   - account             # 마음 전하실 곳 (양가 계좌, 복사 버튼)
+  - venue               # 오시는 길 (지도 + 주소 + 교통편)
   - guestbook           # 방명록
   - share               # 카카오톡 공유 + 링크 복사
 defaults_applied:

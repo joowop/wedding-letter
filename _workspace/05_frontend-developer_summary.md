@@ -185,3 +185,6 @@
 - **줄바꿈**: `.directions p/dd` 에 `text-wrap: pretty` 추가 — 버스 안내 마지막 줄에 "하차" 한 단어만 남던 현상 방지("경인일보 하차" 가 함께 내려감).
 - **캐시**: `style.css?v=20261122c`, `script.js?v=20261122c`.
 - **검증**: 한글 포함 텍스트 요소 112개 computed font-family 전수 검사 → Gowun Batang 아닌 요소 0, font-weight 400(49)/700(63) 외 0. `document.fonts.check('700 16px "Gowun Batang"','서주완')` true(400 도 true). Pretendard `<link>` 0. 375·320px `scrollWidth` = 화면 폭. 320px 계좌 행은 이전과 같이 "복사" 버튼이 번호 아래 줄 오른쪽으로 내려감(이전 12.5px 에서도 폭 부족으로 동일).
+
+> 2026-11-22 (3): 사용자 요청으로 섹션 순서 변경 — 마음 전하실 곳(account)을 갤러리와 오시는 길 사이로 이동. 현재 순서: hero, greeting, couple, calendar, gallery, account, venue, guestbook, share. (오케스트레이터 직접 수정, 위 placeholder 표의 index.html 줄 번호는 이 이동 전 기준)
+
