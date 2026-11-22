@@ -174,3 +174,5 @@
 - **보조 버튼 테두리**: `.btn` 1px #B4C77A(1.78:1) → 1.5px #7A8445(#FFFBF1 대비 3.90:1, #FBF1D6 대비 3.58:1). `.copy-btn` 1px rgba(180,199,122,.5) → 1.5px #7A8445(#FFFDF6 대비 3.96:1). primary 는 그대로.
 - **캐시**: `style.css?v=20261122a`, `script.js?v=20261122a`.
 - **검증**: 한글 포함 텍스트 요소 110개 computed font-family 전수 검사 → Pretendard 아닌 요소 0, input/textarea/button 전부 Pretendard, Myeongjo FontFace 0. 375·320px `scrollWidth` = 화면 폭. 320px 에서 계좌 행은 6개 모두 "복사" 버튼이 번호 아래 줄 오른쪽으로 일관되게 내려감(테두리 추가로 내부 폭 감소, 깨짐 없음).
+
+> 2026-11-22 추가(오케스트레이터 직접 수정): 계좌 아코디언(`.acc-group`)의 진한 테두리·버터색 배경·16px 굵은 글씨가 과하다는 사용자 피드백으로, 이전 디자인(surface 배경, 14.5px, 얇은 화살표)으로 되돌리고 테두리만 아주 연하게(`1px rgba(95,107,44,.22)`) 남겼다. 아이콘은 20px 로 유지.
