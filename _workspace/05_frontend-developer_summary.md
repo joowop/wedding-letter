@@ -161,3 +161,16 @@
 - **보안 규칙**: 루트의 `firestore.rules`(이번에 수정하지 않음). 누구나 읽을 수 있고 목록 limit은 50 이하이며, 생성은 3필드와 길이 검사를 통과해야 하고 `createdAt == request.time`이어야 한다. 수정과 삭제는 막혀 있다.
 - **사용자가 할 일**: (1) Firebase 콘솔 → Firestore → 규칙에 `firestore.rules` 내용을 붙여 넣고 게시한다. 게시 전에는 목록이 "방명록을 불러오지 못했습니다"로 나오고, 글을 쓰면 실패 토스트가 뜬다. (2) 지워야 할 글은 콘솔 → Firestore → `guestbook` 컬렉션에서 해당 문서를 직접 삭제한다(규칙상 페이지에서는 삭제할 수 없다).
 - **검증**: `node --check script.js` 통과. 실제 Firestore 응답은 403 PERMISSION_DENIED였다(규칙 미게시). 실패 상태와 "다시 시도"(불러오는 중… → 다시 실패)를 실제 요청으로 확인했다. 목록 20개 + 더 보기, 빈 목록, 작성 성공, 30초 쿨다운, 작성 실패(403, 잘못된 JSON, 10초 타임아웃), XSS 문자열은 `window.fetch` stub으로 확인했다. 실제 글은 쓰지 않았다. `<img src=x onerror=alert(1)>`와 `<script>`는 글자 그대로 보였고, 목록 안에 img·script 요소는 0개, alert은 0회였다. 375px·320px 모두 `scrollWidth`가 화면 폭과 같았고, 긴 이름과 띄어쓰기 없는 URL도 카드 안에서 줄바꿈되었다.
+
+## 2026-11-22 디자인 피드백 반영
+
+- **한글 글꼴 통일(Pretendard)**: `:root` 의 `--font-ko-serif`("Nanum Myeongjo")·`--font-ko-sans` 를 `--font-ko`("Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif) 하나로 합침. `body` 기본 글꼴도 `--font-ko`. `--font-en-serif`·`--font-script` 뒤에 "Pretendard" 를 fallback 으로 추가(영문 클래스 안 한글이 시스템 명조로 떨어지지 않게). index.html Google Fonts 링크에서 `Nanum+Myeongjo` 제거(Allura·Cormorant 유지).
+  - 굵기·자간: `.section-title` 700/0.06em → 600/0.02em · `.hero-name-ko` 700/0.18em → 700/0.04em(30px 유지) · `.hero-info` 400/0.04em → 500/0.01em · `.couple-name` 700/0.12em → 600/0.04em · `.venue-name` 700/0.04em → 600/0.01em · `.venue-hall` 700/0.04em → 600/0.01em · `.acc-name` 700 → 600 · `.gb-item-name` 700 → 600.
+  - 한글 정보 문구: `.date-headline` Cormorant 20px/0.06em → Pretendard 19px 500/0.01em. `.footer-line.en`("주완 & 윤경") Cormorant italic/0.12em → Pretendard 500 normal/0.04em. script.js D-day 당일 "오늘" span 의 `class="script"`(Allura) 제거 → Pretendard 600.
+- **확대 안내 굵게**: `.gallery-hint` 11.5px muted → 13.5px 600 text, `.venue-map-hint` 12px muted → 13.5px 600 text (자간 0.04em → 0).
+- **계좌 아코디언 아이콘**: 두 `<summary>` 앞에 인라인 SVG `.acc-ico`(22px, stroke 1.5, currentColor, aria-hidden). 신랑=나비넥타이 턱시도 재킷(V 라펠 + 채운 보타이 + 단추 2개), 신부=스위트하트 네크라인 드레스(어깨끈 + 허리선 + 퍼지는 물결 치마). summary 는 flex·align-items:center·gap 8px.
+- **오시는 길 소제목**: `.directions h3` 14px accent → 15.5px 700 text, mb 8px → 7px, `::before '['`·`::after ']'` accent 색.
+- **계좌 버튼**: `.acc-group` 배경 surface → #FFFDF6, 테두리 없음 → 1.5px #5F6B2C(크림 대비 5.6:1), 그림자 추가. `summary` 14.5px 명조 → 16px Pretendard 700, 배경 투명 → #F4E6BD(hover #EFDDA8, active #EAD59A), focus-visible inset 2.5px accent 링. chevron 8px/1.5px → 9px/2px. 열림: summary 하단 1px rgba(95,107,44,.45) 구분선, 목록 #FFFDF6.
+- **보조 버튼 테두리**: `.btn` 1px #B4C77A(1.78:1) → 1.5px #7A8445(#FFFBF1 대비 3.90:1, #FBF1D6 대비 3.58:1). `.copy-btn` 1px rgba(180,199,122,.5) → 1.5px #7A8445(#FFFDF6 대비 3.96:1). primary 는 그대로.
+- **캐시**: `style.css?v=20261122a`, `script.js?v=20261122a`.
+- **검증**: 한글 포함 텍스트 요소 110개 computed font-family 전수 검사 → Pretendard 아닌 요소 0, input/textarea/button 전부 Pretendard, Myeongjo FontFace 0. 375·320px `scrollWidth` = 화면 폭. 320px 에서 계좌 행은 6개 모두 "복사" 버튼이 번호 아래 줄 오른쪽으로 일관되게 내려감(테두리 추가로 내부 폭 감소, 깨짐 없음).

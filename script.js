@@ -13,7 +13,7 @@
   const SHARE_URL        = location.origin + location.pathname;   // 쿼리·해시를 뺀 청첩장 주소
   const SHARE_TITLE      = '서주완 ♡ 최윤경 결혼합니다';
   const SHARE_DESC       = '2027년 4월 17일 토요일 오전 11시\n파티움하우스 수원 2층 그레이스켈리홀';
-  const SHARE_IMAGE      = location.origin + location.pathname.replace(/\/[^/]*$/, '/') + 'images/share-kakao.png';   // 800x800, 이름·날짜가 들어간 카카오 공유 카드 이미지
+  const SHARE_IMAGE      = location.origin + location.pathname.replace(/\/[^/]*$/, '/') + 'images/share-kakao-2.png';   // 800x800, 이름·날짜가 들어간 카카오 공유 카드 이미지
   const TARGET_DATE_STR  = '2027-04-17';
   const TARGET_HOUR      = 11;
 
@@ -411,7 +411,7 @@
       ddayNum.dataset.target = String(diff);
       ddayNum.textContent = isReduced() ? String(diff) : '0';
     } else if (diff === 0) {
-      ddayBlock.innerHTML = '<span class="script" style="font-size:24px;color:var(--color-accent)">오늘</span><br><span style="font-size:14px;color:var(--color-muted)">저희 두 사람의 약속이 시작됩니다</span>';
+      ddayBlock.innerHTML = '<span style="font-size:24px;font-weight:600;color:var(--color-accent)">오늘</span><br><span style="font-size:14px;color:var(--color-muted)">저희 두 사람의 약속이 시작됩니다</span>';
       if (ddayLabel) ddayLabel.style.display = 'none';
     } else {
       ddayNum.dataset.target = String(-diff);

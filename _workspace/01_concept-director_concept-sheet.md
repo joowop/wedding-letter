@@ -35,7 +35,7 @@ palette:
   text: "#3B3022"           # warm dark brown - 본문 (bg 대비 12.45:1, surface 대비 11.43:1)
   muted: "#76664A"          # warm olive taupe - 캡션/보조 텍스트 (bg 대비 5.39:1, surface 대비 4.95:1)
 typography:
-  korean_serif: "Nanum Myeongjo"          # 인사말, 본문 (Google Fonts) — 유지
+  korean_serif: "Pretendard"                # 2026-11-22 사용자 요청: 한글 글꼴 통일(명조 미사용, 맑은 고딕 느낌의 산세리프). 영문 글꼴은 유지
   korean_sans: "Pretendard"               # 시간/주소/계좌번호 등 정보성 텍스트 (CDN) — 유지
   english_serif: "Cormorant Garamond"     # 신랑신부 영문명, 영문 날짜, 섹션 헤딩 (Google Fonts) — 유지
   english_script: "Allura"                # "&" "Save the Date" 등 부드러운 강조 (Google Fonts) — 유지

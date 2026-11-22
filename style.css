@@ -16,10 +16,11 @@
   --color-muted:     #76664A;   /* warm olive taupe */
 
   /* === Typography === */
-  --font-ko-serif:   "Nanum Myeongjo", "Noto Serif KR", serif;
-  --font-ko-sans:    "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-en-serif:   "Cormorant Garamond", "Times New Roman", serif;
-  --font-script:     "Allura", cursive;
+  /* 한글은 Pretendard 하나로 통일 (2026-11-22). 영문 장식 글꼴 뒤에도 Pretendard 를 두어
+     영문 클래스 안의 한글이 명조(시스템 serif)로 떨어지지 않게 함 */
+  --font-ko:         "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-en-serif:   "Cormorant Garamond", "Times New Roman", "Pretendard", serif;
+  --font-script:     "Allura", "Pretendard", cursive;
 
   /* === Layout === */
   --max-w: 480px;
@@ -64,7 +65,7 @@ html, body {
   background:
     linear-gradient(135deg, #F6EBC8 0%, #EFE3BC 50%, #E4DCB8 100%);
   color: var(--color-text);
-  font-family: var(--font-ko-serif);
+  font-family: var(--font-ko);
   font-size: 16px;
   line-height: 1.85;
   -webkit-font-smoothing: antialiased;
@@ -172,10 +173,10 @@ body::before { z-index: 0; }
 }
 
 .section-title {
-  font-family: var(--font-ko-serif);
-  font-weight: 700;
+  font-family: var(--font-ko);
+  font-weight: 600;
   font-size: 22px;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.02em;
   color: var(--color-text);
   margin-bottom: 32px;
 }
@@ -329,11 +330,11 @@ body::before { z-index: 0; }
   margin-bottom: 22px;
 }
 .hero-name-ko {
-  font-family: var(--font-ko-serif);
+  font-family: var(--font-ko);
   font-size: 30px;
   font-weight: 700;
   color: var(--color-text);
-  letter-spacing: 0.18em;
+  letter-spacing: 0.04em;
 }
 .hero-amp {
   font-size: 36px;
@@ -343,10 +344,11 @@ body::before { z-index: 0; }
 }
 
 .hero-info {
-  font-family: var(--font-ko-sans);
+  font-family: var(--font-ko);
   font-size: 16px;
+  font-weight: 500;
   color: var(--color-muted);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.01em;
   line-height: 1.9;
 }
 /* 장소 줄: "파티움하우스 수원" / "2층 그레이스켈리홀" 사이에서만 줄바꿈 */
@@ -473,7 +475,7 @@ body::before { z-index: 0; }
 .reveal.is-visible .couple-card .parents { opacity: 1; transition-delay: 300ms; }
 
 .couple-card .parents {
-  font-family: var(--font-ko-sans);
+  font-family: var(--font-ko);
   font-size: 16px;
   color: var(--color-muted);
   margin-bottom: 10px;
@@ -485,11 +487,11 @@ body::before { z-index: 0; }
   font-weight: 500;
 }
 .couple-name {
-  font-family: var(--font-ko-serif);
+  font-family: var(--font-ko);
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-accent);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.04em;
   margin-bottom: 4px;
 }
 .couple-bio {
@@ -544,10 +546,11 @@ body::before { z-index: 0; }
 }
 
 .date-headline {
-  font-family: var(--font-en-serif);
-  font-size: 20px;
+  font-family: var(--font-ko);   /* 한글+숫자 정보 문구 → Pretendard */
+  font-size: 19px;
+  font-weight: 500;
   color: var(--color-text);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.01em;
   margin-bottom: 32px;
   line-height: 1.7;
 }
@@ -644,7 +647,7 @@ body::before { z-index: 0; }
   font-weight: 500;
 }
 .dday-sub {
-  font-family: var(--font-ko-sans);
+  font-family: var(--font-ko);
   font-size: 14px;
   color: var(--color-muted);
   margin-top: 12px;
@@ -763,7 +766,7 @@ body::before { z-index: 0; }
 }
 
 .gallery-counter {
-  font-family: var(--font-ko-sans);
+  font-family: var(--font-ko);
   font-size: 12px;
   color: var(--color-muted);
   letter-spacing: 0.08em;
@@ -771,40 +774,41 @@ body::before { z-index: 0; }
 }
 
 .gallery-hint {
-  font-size: 11.5px;
-  color: var(--color-muted);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-text);
   margin-top: 14px;
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
 }
 
 /* ==========================================================
    6. VENUE
    ========================================================== */
 .venue-name {
-  font-family: var(--font-ko-serif);
-  font-weight: 700;
+  font-family: var(--font-ko);
+  font-weight: 600;
   font-size: 18px;
   color: var(--color-text);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.01em;
   margin-bottom: 4px;
 }
 .venue-hall {
-  font-family: var(--font-ko-serif);
-  font-weight: 700;
+  font-family: var(--font-ko);
+  font-weight: 600;
   font-size: 15px;
   color: var(--color-accent);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.01em;
   margin-bottom: 4px;
 }
 .venue-addr {
-  font-family: var(--font-ko-sans);
+  font-family: var(--font-ko);
   font-size: 14px;
   color: var(--color-text);
   margin-top: 6px;
   letter-spacing: 0.02em;
 }
 .venue-addr-sub {
-  font-family: var(--font-ko-sans);
+  font-family: var(--font-ko);
   font-size: 12.5px;
   color: var(--color-muted);
   margin: 2px 0 22px;
@@ -835,10 +839,11 @@ body::before { z-index: 0; }
   height: auto;
 }
 .venue-map-hint {
-  font-size: 12px;
-  color: var(--color-muted);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-text);
   margin-top: 10px;
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
 }
 
 .venue-actions {
@@ -870,17 +875,26 @@ body::before { z-index: 0; }
   border-radius: 12px;
   padding: 18px 20px;
 }
+/* 소제목: [자가용] 머리말 형태 — 대괄호는 accent, 글자는 text (HTML 텍스트는 그대로) */
 .directions h3 {
-  font-family: var(--font-ko-serif);
+  font-family: var(--font-ko);
   font-weight: 700;
-  font-size: 14px;
-  color: var(--color-accent);
-  margin-bottom: 8px;
-  letter-spacing: 0.04em;
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: var(--color-text);
+  margin-bottom: 7px;
+  letter-spacing: 0;
 }
+.directions h3::before,
+.directions h3::after {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+.directions h3::before { content: '['; margin-right: 2px; }
+.directions h3::after  { content: ']'; margin-left: 2px; }
 .directions p,
 .directions dd {
-  font-family: var(--font-ko-sans);
+  font-family: var(--font-ko);
   font-size: 14px;
   color: var(--color-text);
   line-height: 1.7;
@@ -922,7 +936,7 @@ body::before { z-index: 0; }
 /* 노선 번호 태그: 단일 스타일 (olive 면 + cream 글자 ≈ 5.9:1, AA) */
 .bus-tag {
   display: inline-block;
-  font-family: var(--font-ko-sans);
+  font-family: var(--font-ko);
   font-size: 13px;
   line-height: 1.5;
   padding: 1px 9px;
@@ -949,24 +963,49 @@ body::before { z-index: 0; }
   width: 100%;
   max-width: 360px;
   margin: 12px auto 0;
-  background: var(--color-surface);
+  background: #FFFDF6;                         /* 열린 목록 영역: 밝은 배경 */
+  border: 1.5px solid var(--color-accent);     /* 크림 배경 대비 5.6:1 */
   border-radius: 12px;
   overflow: hidden;
   text-align: left;
+  box-shadow: 0 2px 8px rgba(59, 48, 34, 0.08);
 }
 .acc-group + .acc-group { margin-top: 14px; }
 .acc-group summary {
   list-style: none;
   cursor: pointer;
-  padding: 16px 20px;
-  font-family: var(--font-ko-serif);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 15px 48px 15px 18px;
+  background: #F4E6BD;                         /* 닫힌 상태: surface 보다 한 단계 진한 버터 */
+  font-family: var(--font-ko);
   font-weight: 700;
-  font-size: 14.5px;
-  color: var(--color-accent);
-  letter-spacing: 0.04em;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-accent);                  /* #F4E6BD 위 4.66:1 */
+  letter-spacing: 0;
   position: relative;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
   transition: background var(--dur-base) var(--ease-standard);
+}
+.acc-ico {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.acc-ico .fill { fill: currentColor; stroke: none; }
+.acc-group summary:hover  { background: #EFDDA8; }
+.acc-group summary:active { background: #EAD59A; }
+.acc-group summary:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2.5px var(--color-accent);   /* overflow:hidden 에 잘리지 않게 inset */
 }
 .acc-group summary::-webkit-details-marker { display: none; }
 .acc-group summary::after {
@@ -974,17 +1013,18 @@ body::before { z-index: 0; }
   position: absolute;
   right: 24px;
   top: 50%;
-  width: 8px;
-  height: 8px;
-  border-right: 1.5px solid var(--color-accent);
-  border-bottom: 1.5px solid var(--color-accent);
+  width: 9px;
+  height: 9px;
+  border-right: 2px solid var(--color-accent);
+  border-bottom: 2px solid var(--color-accent);
   transform: translateY(-70%) rotate(45deg);
   transition: transform var(--dur-base) var(--ease-standard);
 }
 .acc-group[open] summary::after {
   transform: translateY(-30%) rotate(-135deg);
 }
-.acc-group[open] summary { background: rgba(242, 194, 48, 0.10); }
+.acc-group[open] summary { border-bottom: 1px solid rgba(95, 107, 44, 0.45); }
+.acc-group[open] .acc-list > li:first-child { border-top: 0; }
 
 .acc-list {
   list-style: none;
@@ -1001,14 +1041,14 @@ body::before { z-index: 0; }
 .acc-list li > .copy-btn { margin-left: auto; }
 
 .acc-name {
-  font-family: var(--font-ko-serif);
+  font-family: var(--font-ko);
   font-size: 13.5px;
   color: var(--color-text);
-  font-weight: 700;
+  font-weight: 600;
   flex: 1 0 100%;
 }
 .acc-num {
-  font-family: var(--font-ko-sans);
+  font-family: var(--font-ko);
   font-size: 12.5px;
   color: var(--color-muted);
   letter-spacing: 0.02em;
@@ -1021,12 +1061,12 @@ body::before { z-index: 0; }
   align-items: center;
   gap: 4px;
   padding: 6px 12px;
-  border: 1px solid rgba(180, 199, 122, 0.5);
+  border: 1.5px solid #7A8445;                 /* 보조 버튼 테두리: 크림 대비 3.9:1 */
   background: var(--color-bg);
   color: var(--color-accent);
   border-radius: 999px;
   font-size: 12px;
-  font-family: var(--font-ko-sans);
+  font-family: var(--font-ko);
   letter-spacing: 0.02em;
   transition:
     transform var(--dur-fast) var(--ease-standard),
@@ -1104,7 +1144,7 @@ body::before { z-index: 0; }
   border-radius: 10px;
   background: var(--color-bg);
   color: var(--color-text);
-  font-family: var(--font-ko-sans);
+  font-family: var(--font-ko);
   font-size: 16px;                              /* iOS 입력 확대 방지 (≥16px) */
   line-height: 1.6;
   transition: border-color var(--dur-base) var(--ease-standard), box-shadow var(--dur-base) var(--ease-standard);
@@ -1122,7 +1162,7 @@ body::before { z-index: 0; }
 .gb-error {
   flex: 1 1 auto;
   min-height: 0;
-  font-family: var(--font-ko-sans);
+  font-family: var(--font-ko);
   font-size: 12.5px;
   color: var(--color-accent);
   line-height: 1.5;
@@ -1131,7 +1171,7 @@ body::before { z-index: 0; }
 .gb-count {
   flex: 0 0 auto;
   margin-left: auto;
-  font-family: var(--font-ko-sans);
+  font-family: var(--font-ko);
   font-size: 12px;
   color: var(--color-muted);
   letter-spacing: 0.02em;
@@ -1141,7 +1181,7 @@ body::before { z-index: 0; }
 
 .gb-board { margin-top: 28px; text-align: center; }
 .gb-status {
-  font-family: var(--font-ko-sans);
+  font-family: var(--font-ko);
   font-size: 13.5px;
   color: var(--color-muted);
   line-height: 1.8;
@@ -1172,21 +1212,21 @@ body::before { z-index: 0; }
 .gb-item-name {
   flex: 1 1 auto;
   min-width: 0;
-  font-family: var(--font-ko-serif);
-  font-weight: 700;
+  font-family: var(--font-ko);
+  font-weight: 600;
   font-size: 14px;
   color: var(--color-text);
   overflow-wrap: anywhere;
 }
 .gb-item-date {
   flex: 0 0 auto;
-  font-family: var(--font-ko-sans);
+  font-family: var(--font-ko);
   font-size: 12px;
   color: var(--color-muted);
   letter-spacing: 0.02em;
 }
 .gb-item-msg {
-  font-family: var(--font-ko-sans);
+  font-family: var(--font-ko);
   font-size: 14px;
   line-height: 1.75;
   color: var(--color-text);
@@ -1228,10 +1268,11 @@ body::before { z-index: 0; }
   margin-top: 4px;
 }
 .footer-line.en {
-  font-family: var(--font-en-serif);
-  font-style: italic;
+  font-family: var(--font-ko);   /* 내용이 한글 이름("주완 & 윤경") → Pretendard, 기울임 제거 */
+  font-style: normal;
+  font-weight: 500;
   font-size: 13px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.04em;
   margin-top: 8px;
   color: var(--color-text);
 }
@@ -1243,10 +1284,10 @@ body::before { z-index: 0; }
   display: inline-block;
   padding: 12px 22px;
   margin: 4px;
-  border: 1px solid var(--color-secondary);
+  border: 1.5px solid #7A8445;                 /* 보조 버튼 테두리: 크림 대비 3.9:1 (이전 #B4C77A 1.78:1) */
   background: transparent;
   color: var(--color-text);
-  font-family: var(--font-ko-sans);
+  font-family: var(--font-ko);
   font-size: 13.5px;
   letter-spacing: 0.04em;
   border-radius: 999px;
@@ -1282,7 +1323,7 @@ body::before { z-index: 0; }
   color: var(--color-text);
   padding: 12px 20px;
   border-radius: 12px;
-  font-family: var(--font-ko-sans);
+  font-family: var(--font-ko);
   font-size: 13px;
   letter-spacing: 0.02em;
   box-shadow: 0 6px 24px rgba(59, 48, 34, 0.18);
